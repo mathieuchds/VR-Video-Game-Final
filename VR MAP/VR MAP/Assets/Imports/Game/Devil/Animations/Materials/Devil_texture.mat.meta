@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a45bf9c279754524199c02e869550db1
+timeCreated: 1460833045
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 60777
+  packageName: Devil
+  packageVersion: 1.0
+  assetPath: Assets/Devil/Animations/Materials/Devil_texture.mat
+  uploadId: 113273

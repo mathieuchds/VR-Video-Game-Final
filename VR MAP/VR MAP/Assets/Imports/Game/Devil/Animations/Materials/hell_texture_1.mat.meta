@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9a069461a20472941bdf6f9abebd9350
+timeCreated: 1460833188
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 60777
+  packageName: Devil
+  packageVersion: 1.0
+  assetPath: Assets/Devil/Animations/Materials/hell_texture_1.mat
+  uploadId: 113273
