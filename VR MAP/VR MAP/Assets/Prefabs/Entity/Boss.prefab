@@ -183,9 +183,12 @@ MonoBehaviour:
   maxHealth: 1000
   health: 0
   contactDamage: 50
+  speed: 3
   flashTime: 0.1
+  isStunned: 0
   rb: {fileID: 0}
   spawner: {fileID: 0}
+  flameEffectPrefab: {fileID: 0}
 --- !u!120 &2752826438571980995
 LineRenderer:
   serializedVersion: 2
@@ -303,6 +306,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22f73333d4d05cf4bad5ee1adf72b955, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boss
+  healthBar: {fileID: 0}
+  maxHealth: 100
+  health: 0
+  contactDamage: 10
+  speed: 3
+  flashTime: 0.1
+  isStunned: 0
+  rb: {fileID: 0}
+  spawner: {fileID: 0}
+  flameEffectPrefab: {fileID: 197962, guid: c1f1c6a173fc5a34aae675702b69445a, type: 3}
   chaseSpeed: 3.5
   dashSpeed: 20
   dashCooldown: 5

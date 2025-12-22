@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class LevelManagement : MonoBehaviour
 {
@@ -35,6 +35,14 @@ public class LevelManagement : MonoBehaviour
     [SerializeField] private int maxWave = 10;
     [Tooltip("Délai avant de vérifier si tous les ennemis sont morts (secondes)")]
     [SerializeField] private float checkDelay = 2f;
+
+
+    [Header("Boss")]
+    [SerializeField] private GameObject bossPrefab;
+    [SerializeField] private Transform bossSpawnPoint;
+
+    private bool bossSpawned = false;
+
 
     [Header("Debug")]
     [SerializeField] private bool debugMode = true;
@@ -451,7 +459,7 @@ public class LevelManagement : MonoBehaviour
             if (debugMode)
                 Debug.Log("[LevelManagement] ★★★ VICTOIRE ! TOUTES LES VAGUES TERMINÉES ★★★");
 
-            gameStateManager.TriggerGameOver(true);
+            SpawnBoss();
             StopLevelManagement();
         }
         else
@@ -467,6 +475,23 @@ public class LevelManagement : MonoBehaviour
 
             StartCoroutine(RestartCheckingAfterDelay());
         }
+    }
+
+    private void SpawnBoss()
+    {
+        if (bossPrefab == null || bossSpawnPoint == null)
+        {
+            return;
+        }
+
+        bossSpawned = true;
+
+
+        Instantiate(
+            bossPrefab,
+            bossSpawnPoint.position,
+            bossSpawnPoint.rotation
+        );
     }
 
     /// <summary>

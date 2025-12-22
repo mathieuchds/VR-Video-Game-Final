@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
@@ -30,7 +30,7 @@ public class Enemy : MonoBehaviour
     private GameObject currentFlame;
 
 
-    void Start()
+    protected void Start()
     {
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (rb == null)
@@ -173,7 +173,7 @@ public class Enemy : MonoBehaviour
 
     }
 
-    public void TakeDamage(float dmg)
+    public virtual void TakeDamage(float dmg)
     {
         health -= dmg;
 
@@ -187,20 +187,37 @@ public class Enemy : MonoBehaviour
         {
             if (spawner != null) spawner.EnemyDied();
             QuestManager.Instance?.AddProgress(QuestObjectiveType.KillEnemy, 1);
-            Destroy(gameObject);
+            Die();
         }
     }
 
-    protected void OnTriggerEnter(Collider other)
+
+    protected virtual void Die()
     {
-        if (other.CompareTag("Player"))
-        {
-            PlayerStats ps = other.GetComponent<PlayerStats>();
-            if (ps != null)
-            {
-                ps.TakeDamage(contactDamage);
-            }
+
+        PlayerStats ps = GameObject.FindObjectOfType<PlayerStats>(true);
+        LevelData levelData = FindObjectOfType<LevelData>(true);
+        int currentLevel;
+
+        if (levelData == null) { 
+            currentLevel = 0; 
+        }else{
+            currentLevel = levelData.level;
         }
+
+        ps.AddScore(10f + currentLevel);
+        // Si c'est le boss victoire
+        if (CompareTag("Boss"))
+        {
+            Debug.Log(" BOSS MORT = FIN DU JEU ");
+
+            GameStateManager gsm = FindObjectOfType<GameStateManager>(true);
+            if (gsm != null)
+                gsm.TriggerGameOver(true);
+        }
+
+        Destroy(gameObject);
     }
+
 }
 

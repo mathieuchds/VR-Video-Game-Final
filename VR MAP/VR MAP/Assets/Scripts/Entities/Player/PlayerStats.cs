@@ -48,6 +48,9 @@ public class PlayerStats : MonoBehaviour
     [Header("IceRay")]
     [SerializeField] public float iceDuration = 2f;
 
+    [Header("Score")]
+    [SerializeField] private float score = 0f;
+
 
     public event Action HealthUpdate;
 
@@ -192,5 +195,15 @@ public class PlayerStats : MonoBehaviour
         moveSpeed = baseSpeed;
         isSlowed = false;
         slowCoroutine = null;
+    }
+
+    public void AddScore(float amount)
+    {
+        score += amount;
+    }
+
+    public float GetScore()
+    {
+        return score;
     }
 }

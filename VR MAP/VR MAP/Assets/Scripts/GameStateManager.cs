@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections;
+using UnityEngine.SceneManagement;
+
 
 public class GameStateManager : MonoBehaviour
 {
@@ -258,17 +260,9 @@ public class GameStateManager : MonoBehaviour
     /// </summary>
     public void ReturnToMenu()
     {
-        LogDebug("[GameStateManager] ReturnToMenu() appelé");
-        hasWon = false;
+        LogDebug("[GameStateManager] Reload de la scène");
 
-        // Réinitialiser le niveau
-        if (levelData != null)
-            levelData.level = 1;
-
-        // Détruire tous les ennemis
-        CleanupEnemies();
-
-        SetState(GameState.Menu);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     /// <summary>
@@ -277,19 +271,11 @@ public class GameStateManager : MonoBehaviour
     /// </summary>
     public void RestartGame()
     {
-        LogDebug("[GameStateManager] RestartGame() appelé");
-        hasWon = false;
+        LogDebug("[GameStateManager] Reload de la scène");
 
-        // 1. ✅ Réinitialiser le niveau AVANT de reset les spawners
-        if (levelData != null)
-            levelData.level = 1;
-
-        // 2. Détruire tous les ennemis restants
-        CleanupEnemies();
-
-        // 4. Changer d'état (active le Scene Manager)
-        SetState(GameState.Game);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
+
 
     /// <summary>
     /// ✅ NOUVEAU : Quitte l'application (appelé par le bouton Quit)
@@ -389,15 +375,19 @@ public class GameStateManager : MonoBehaviour
                 SetCanvasActive(menuCanvas, false);
                 SetCanvasActive(gameCanvas, false);
                 SetCanvasActive(powerUpCanvas, false);
-                
+
+                PlayerStats ps = GameObject.FindObjectOfType<PlayerStats>(true);
+                float score= ps != null ? ps.GetScore() : 0f;
                 if (hasWon)
                 {
-                    LogDebug("[GameStateManager] → Activation UNIQUEMENT du GameOver Win Canvas");
+                    gameOverWinCanvas.GetComponent<GameOverScore>()?.SetScore(score);
                     SetCanvasActive(gameOverWinCanvas, true);
                     SetCanvasActive(gameOverLoseCanvas, false);
                 }
                 else
                 {
+                    gameOverLoseCanvas.GetComponent<GameOverScore>()?.SetScore(score);
+
                     LogDebug("[GameStateManager] → Activation UNIQUEMENT du GameOver Lose Canvas");
                     SetCanvasActive(gameOverWinCanvas, false);
                     SetCanvasActive(gameOverLoseCanvas, true);
