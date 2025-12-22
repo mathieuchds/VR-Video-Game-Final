@@ -1,0 +1,287 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7281560823030315171
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1329815525656181547}
+  - component: {fileID: 5254836012281384541}
+  - component: {fileID: 4112506071758453265}
+  - component: {fileID: 1793516351984105593}
+  - component: {fileID: 1085889846366434510}
+  - component: {fileID: 6626740923682643189}
+  - component: {fileID: 1724215158751255354}
+  - component: {fileID: 6440741993182667034}
+  - component: {fileID: 4111202545617588227}
+  m_Layer: 0
+  m_Name: SceneManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1329815525656181547
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7281560823030315171}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 290, y: -275.8, z: -763}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5254836012281384541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7281560823030315171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4a5e0e9e3be3ae49866f3f023c083dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grassParent: {fileID: 0}
+  flowerPrefabs:
+  - {fileID: 6284870284092300780, guid: 89c1305d2258a154286f8c117f1f2441, type: 3}
+  - {fileID: 4399184098321190726, guid: 88075ccc1e707ad48963e8216f8a7401, type: 3}
+  - {fileID: 2126758486473033836, guid: 1fb0d2adffbb5514ca060e05be0de7d1, type: 3}
+  - {fileID: 570301956381461569, guid: 29d0d028606e9174bbd576e62529dc59, type: 3}
+  - {fileID: 120567254519065965, guid: fbd00d1c479e2bc4d9e8a889c4a63a8c, type: 3}
+  halloweenPrefabs:
+  - {fileID: 929124949997865434, guid: 14a287182373c8043a7d744fdc5d9507, type: 3}
+  - {fileID: 4541867568462723613, guid: 22efd63b502247f408c42b6530b47e45, type: 3}
+  - {fileID: 3863355905218747618, guid: 3c6eb7e6211ed054cbce504d75f3ff9c, type: 3}
+  - {fileID: 2973529071535222389, guid: 245ee96c87e64194d971a2a90aa95c62, type: 3}
+  winterPrefabs:
+  - {fileID: 1064964638160092, guid: e7e5c6145b9ce71489861c6f44c5d707, type: 3}
+  - {fileID: 1114798733411220, guid: bd09002fe78c6e741b2f755962e01d7f, type: 3}
+  - {fileID: 1347955944192992, guid: 096b87b8ee3dd3d41aad1c2ca4c366c7, type: 3}
+  - {fileID: 1317041649968840, guid: 5a0236df090ec404b9d223ee3a2fc1a3, type: 3}
+  groundRoot: {fileID: 0}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  maxRayHeight: 50
+  groundSnapOffset: 0
+  groundPenetration: 0.05
+  additionalDownOffset: 0
+--- !u!114 &4112506071758453265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7281560823030315171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fedf68ab141568c4aa2e1dec3c8e79f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  level: 0
+  levelName: 
+  isUnlocked: 0
+--- !u!114 &1793516351984105593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7281560823030315171}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a2211d8d1e940c4aa8bc82702d74684, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  testMode: 1
+  intervalSeconds: 5
+--- !u!114 &1085889846366434510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7281560823030315171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd33bfb0f5768884ca103c3e27b75390, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lanternsParent: {fileID: 0}
+  normalPrefabs:
+  - {fileID: 7189047328722756852, guid: e653d43dd0de53f499e38942de288abd, type: 3}
+  halloweenPrefabs:
+  - {fileID: 2697965227584190506, guid: ed205d3009b7e664f82faa4d1c5c4e9a, type: 3}
+  - {fileID: 8899703655016674783, guid: 02f3d5b8af66e2646a42066953e9bd4b, type: 3}
+  christmasPrefabs:
+  - {fileID: 170010, guid: f8abf8339601a404894f7b439a63bff1, type: 3}
+  - {fileID: 193638, guid: 4d23da4c99ac4b14e8df071ea5494435, type: 3}
+  - {fileID: 168756, guid: 07226ca2157dcb441a78e5450430da19, type: 3}
+  - {fileID: 193158, guid: 4f6e70c6b62052e4f8e04adf35826fc3, type: 3}
+  - {fileID: 131520, guid: 5c0351d83a7005948a3bf1de5112a78a, type: 3}
+  groundRoot: {fileID: 0}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  maxRayHeight: 100
+  groundSnapOffset: 0
+  groundPenetration: 0.05
+  additionalDownOffset: 0
+--- !u!114 &6626740923682643189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7281560823030315171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c38b584701af7264f82f2ecdaa7da7dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  decorationsParent: {fileID: 0}
+  normalPrefabs:
+  - {fileID: 3330770286254933976, guid: 2b3652508cc318e42aa3d09ba7e2a112, type: 3}
+  - {fileID: 9014072287396018133, guid: e3f64f0d9854e594e839af1b867fc6c0, type: 3}
+  - {fileID: 1261221675708879581, guid: 8277b774c0a92844ba31174071a890e0, type: 3}
+  - {fileID: 9062338219747381643, guid: 2c8c846858c9abf488350f6de30ccc61, type: 3}
+  - {fileID: 8604576547512451574, guid: c906a4478d45f1040ad9fc02c3e90297, type: 3}
+  - {fileID: 179969503972620271, guid: d15e99b532430c34a9ad132fc0d58d2b, type: 3}
+  - {fileID: 9173536877833153588, guid: 15fb3370a13cea54b9574ec9029c7e23, type: 3}
+  - {fileID: 4511359675329828018, guid: c265e77f7d076db4096bcc973d93d866, type: 3}
+  halloweenPrefabs:
+  - {fileID: 1511164707345436327, guid: 0a500f5b60c6e9c4f92e1ea286a4c867, type: 3}
+  - {fileID: 7797295479864358708, guid: 72103b2194f5df541a4b60797eced259, type: 3}
+  - {fileID: 2119252929475379375, guid: 921d0c27a6c622949b8b8e1d9e46b698, type: 3}
+  - {fileID: 7436960334708570114, guid: 616a849b11a05a04ebb0f18644c13047, type: 3}
+  - {fileID: 4467135361893618014, guid: 54b32f3a59ae9724c80c44305fb67cb2, type: 3}
+  - {fileID: 7129618346194545963, guid: 0030e0d9f4c3f5d4d9c615d963652a18, type: 3}
+  christmasPrefabs:
+  - {fileID: 197382, guid: 3d506f0250209ea44a6e8690a4cc8875, type: 3}
+  - {fileID: 192886, guid: bf37918e0d334c6419667fddaf1f41cb, type: 3}
+  - {fileID: 131304, guid: 0e137ece9e114a34f9624c01dece9334, type: 3}
+  - {fileID: 179818, guid: 13d7022ed66b22c46af5c33060c675d9, type: 3}
+  - {fileID: 189098, guid: a08205cbe2439804eb56d67a98b22351, type: 3}
+  - {fileID: 192948, guid: 98b2a8093fe96cc49b77e5f52622da97, type: 3}
+  - {fileID: 198084, guid: 09a67467cae57544cbc73f219e830fe4, type: 3}
+  - {fileID: 103658, guid: a4236c0f9c39b6d4bb23aefe4aa795f3, type: 3}
+  groundRoot: {fileID: 0}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  maxRayHeight: 50
+  groundSnapOffset: 0
+  groundPenetration: 0.05
+  additionalDownOffset: 0
+--- !u!114 &1724215158751255354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7281560823030315171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474e6246b2129d94aad5aecbbc0a8aa2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rocksParent: {fileID: 0}
+  normalPrefabs:
+  - {fileID: 465510044919914276, guid: 6f3c0b94272e7e744a490550c18b58d6, type: 3}
+  - {fileID: 2380846811372264750, guid: 23ece674259ee714ab4fa88043a07c73, type: 3}
+  - {fileID: 8208134182140680753, guid: 36948617ea134a043808d82e721559e8, type: 3}
+  - {fileID: 1528464401552908886, guid: 741f4966857b8564d962104d974b40c6, type: 3}
+  halloweenPrefabs:
+  - {fileID: 291724602121693812, guid: 8194ce01d0033b848b7ec5b826c4ede2, type: 3}
+  - {fileID: 8533965681625350508, guid: 6c359146cf0aad843bb9de2b8cdc7d86, type: 3}
+  - {fileID: 758516287222988601, guid: aeacd069432ddb144afbcb284e246e4f, type: 3}
+  christmasPrefabs:
+  - {fileID: 8819208786060711880, guid: a191696c03d17774b9f69253e6c2ac9d, type: 3}
+  - {fileID: 1850899330671549312, guid: 480a84808da70df43936992bda2bf215, type: 3}
+  - {fileID: 6120407510012501105, guid: 96c6b7ac17c16fc498db5f873ab3c52a, type: 3}
+  groundRoot: {fileID: 0}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  maxRayHeight: 50
+  groundSnapOffset: 0
+  groundPenetration: 0.05
+  additionalDownOffset: 0.15
+--- !u!114 &6440741993182667034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7281560823030315171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 096ca01109c0e6e41a7ce7fdbe88d6c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  halloweenPrefabs:
+  - {fileID: 547654924143946539, guid: c3e95a38926bbb84e9624ffb149cd122, type: 3}
+  - {fileID: 9095049772744688888, guid: 395e4ba0fc4d8f84e827f8ae2800f81d, type: 3}
+  - {fileID: 8923681436371134190, guid: 763d6d21569cc524fb367760f8526c49, type: 3}
+  winterPrefabs:
+  - {fileID: 3264723022211989805, guid: f10246a71c2eea844aa44a414a9bfcb9, type: 3}
+  - {fileID: 5353176428124349010, guid: 81e5221edc82f28418ab8b57af1af2ad, type: 3}
+  - {fileID: 2279750837558667678, guid: f4539d53e3215ba429ec08aa9f0853f1, type: 3}
+  spawnerPrefabHalloween: {fileID: 3998186714802536193, guid: f080dc77339d6464f92cb0dd49387951, type: 3}
+  spawnerPrefabWinter: {fileID: 2064881547654939525, guid: 5b54e72f569c95d4f87d5c0c72154bb4, type: 3}
+  useMarkerTag: 0
+  markerTagHalloween: SpawnHalloween
+  markerTagWinter: SpawnWinter
+  groundRoot: {fileID: 0}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  maxRayHeight: 50
+  groundSnapOffset: 0
+  debugMode: 0
+--- !u!114 &4111202545617588227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7281560823030315171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5a4419124c365444bf3fa2f7b199baf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  treesParent: {fileID: 0}
+  normalTreePrefabs:
+  - {fileID: 2471898502512046958, guid: e53fab55ad28bbd46aaa67f59f4eb76e, type: 3}
+  - {fileID: 1595357107441046934, guid: 461ca4de12a79a64fb974ff4803b5417, type: 3}
+  - {fileID: 7544265833837930587, guid: 2d1adbf38b052384487d999f969911d0, type: 3}
+  halloweenTreePrefabs:
+  - {fileID: 3547194741609500943, guid: d37a870c417deb84cb7e67404d045220, type: 3}
+  - {fileID: 7590501982292961628, guid: 04821b166b9f5a148b6209d219d7a442, type: 3}
+  - {fileID: 3664226488966345754, guid: d8dfc24c8629ba644824364c12897ad2, type: 3}
+  christmasTreePrefabs:
+  - {fileID: 4833340474945433726, guid: 8fcb13deaa00c4448870318b46392362, type: 3}
+  - {fileID: 3388705634670956138, guid: d9e1e1f4a10402344ab5083c862f9065, type: 3}
+  - {fileID: 1989775186386178666, guid: dfcfb68d91fcdf242b4350ffad7684f8, type: 3}
+  groundRoot: {fileID: 0}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  maxRayHeight: 50
+  groundSnapOffset: 0
+  groundPenetration: 0.05
+  additionalDownOffset: 0
+  randomScaleMin: 0.9
+  randomScaleMax: 1.1
+  randomizeYRotation: 1

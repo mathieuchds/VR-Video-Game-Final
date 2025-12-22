@@ -1,0 +1,197 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3851526010564839946
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1305961990093514877}
+  - component: {fileID: 1335148059952974614}
+  - component: {fileID: 4886573479593000183}
+  - component: {fileID: 3054088472743524137}
+  - component: {fileID: 7307952752815920584}
+  - component: {fileID: 8553895092532752235}
+  m_Layer: 0
+  m_Name: spawnHMiniboss
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1305961990093514877
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3851526010564839946}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.18807131, z: -0, w: 0.98215544}
+  m_LocalPosition: {x: -15.36, y: -6.88, z: 38.38}
+  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 21.68, z: 0}
+--- !u!33 &1335148059952974614
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3851526010564839946}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &4886573479593000183
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3851526010564839946}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: f08d30e10a7e1c44a93d5182e384e1ff, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &3054088472743524137
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3851526010564839946}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7307952752815920584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3851526010564839946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e741851cba3ad425c91ecf922cc6b379, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _data:
+    _json: '{"declarations":{"Kind":"Object","collection":{"$content":[],"$version":"A"},"$version":"A"}}'
+    _objectReferences: []
+--- !u!114 &8553895092532752235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3851526010564839946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e2bd5998743c7047b9ce35da6980f9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  seasonType: 0
+  spawnerType: 1
+  mobPrefabs:
+  - {fileID: 8747757470087523455, guid: 9690126558f4862478df85ea898bc332, type: 3}
+  - {fileID: 1248815240492774, guid: 0d951fde96e634540b8b2e6e24760ff1, type: 3}
+  - {fileID: 9061928882406066884, guid: a5cd9e2dda9cd37469157cba354c1148, type: 3}
+  waves:
+  - count0: 1
+    count1: 0
+    count2: 0
+    interval: 5
+  - count0: 1
+    count1: 1
+    count2: 0
+    interval: 5
+  - count0: 1
+    count1: 1
+    count2: 1
+    interval: 5
+  - count0: 2
+    count1: 1
+    count2: 1
+    interval: 4
+  - count0: 2
+    count1: 2
+    count2: 2
+    interval: 4
+  - count0: 3
+    count1: 3
+    count2: 3
+    interval: 3
+  - count0: 4
+    count1: 4
+    count2: 4
+    interval: 3
+  - count0: 5
+    count1: 5
+    count2: 5
+    interval: 3
+  - count0: 6
+    count1: 6
+    count2: 6
+    interval: 3
+  - count0: 7
+    count1: 7
+    count2: 7
+    interval: 3
+  minibossStats:
+    healthMultiplier: 3
+    damageMultiplier: 2
+    sizeMultiplier: 1.5
+  minInterval: 0.05
+  countGrowthPerExtraWave: 1.15
+  intervalReductionPerWave: 0.05
+  onWaveCompleted:
+    m_PersistentCalls:
+      m_Calls: []
+  debugMode: 0

@@ -1,0 +1,8 @@
+﻿<Solution>
+  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="Polyperfect.Universal.csproj" />
+  <Project Path="Gentleland.SteampunkUI.DemoAndExample.csproj" />
+  <Project Path="Gentleland.Utils.SteampunkUI.csproj" />
+  <Project Path="OccaSoftware.Crosshairs.Editor.csproj" />
+</Solution>

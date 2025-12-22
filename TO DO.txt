@@ -1,0 +1,18 @@
+- revoir le general game manager 1
+- son 10
+- faire sorte que maria soit l'end game 2
+- pimper mariah 11
+- finir les effets sur les pouvoirs 9
+- faire heal
+
+
+- faire les UI 5
+- ciel et ambiance 8
+- finir les mobs 7
+
+
+
+- equilibrer les degats 12
+- faire un score + l'afficher 4
+- diversité des missions 13
+- faire le retry 3

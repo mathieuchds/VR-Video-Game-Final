@@ -1,0 +1,21 @@
+rapport VR : 
+
+montrer les différents meca
+montrer les demarches derrières
+quels pb et comment on les a résolus, mm si on a pas reussi à les resoudre juste les signaler
+Template latex isima
+
+
+mettre des images 
+
+
+on peut faire des annexes avec des bouts de code
+
+
+schema uml des animations 
+de comment les scripts et les objets interragissent entres eux
+
+source des prefab et ressources
+
+Lien du git 
+
