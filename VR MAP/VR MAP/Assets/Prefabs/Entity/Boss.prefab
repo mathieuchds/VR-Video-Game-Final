@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 67777878166038833}
   - component: {fileID: 955715220979109004}
   - component: {fileID: 742630723322922028}
-  - component: {fileID: 760941293853647873}
   - component: {fileID: 2752826438571980995}
   - component: {fileID: 5791724933345029385}
   - component: {fileID: 6961142472476109617}
@@ -167,28 +166,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &760941293853647873
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 937288432677411039}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d1cbe1946556a242a85c9c1aecb7299, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  healthBar: {fileID: 1880656171001299068}
-  maxHealth: 1000
-  health: 0
-  contactDamage: 50
-  speed: 3
-  flashTime: 0.1
-  isStunned: 0
-  rb: {fileID: 0}
-  spawner: {fileID: 0}
-  flameEffectPrefab: {fileID: 0}
 --- !u!120 &2752826438571980995
 LineRenderer:
   serializedVersion: 2
@@ -306,7 +283,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22f73333d4d05cf4bad5ee1adf72b955, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boss
-  healthBar: {fileID: 0}
+  healthBar: {fileID: 1880656171001299068}
   maxHealth: 100
   health: 0
   contactDamage: 10
