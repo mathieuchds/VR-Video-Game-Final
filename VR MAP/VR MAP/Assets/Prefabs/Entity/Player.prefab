@@ -312,8 +312,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1.6480476, y: 1, z: 3.838897}
+  m_Center: {x: 0.05356224, y: 3.409695e-24, z: -1.4194486}
 --- !u!114 &5119464151642589359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -439,9 +439,9 @@ MonoBehaviour:
   speedBoostDuration: 3
   explosionRadius: 3
   explosionDamage: 20
-  flameDamagePerSecond: 4
+  flameDamagePerSecond: 120
   flameDuration: 2
-  poisonDamage: 10
+  poisonDamage: 30
   poisonDuration: 3
   iceDuration: 2
   score: 0

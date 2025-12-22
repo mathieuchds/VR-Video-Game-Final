@@ -74,6 +74,8 @@ public class IceWizard : Enemy
 
     void Start()
     {
+        base.Start();
+
         agent = GetComponent<NavMeshAgent>();
         if (rb == null) rb = GetComponent<Rigidbody>();
         if (agent != null)

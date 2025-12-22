@@ -16,6 +16,7 @@ public class Bear : Enemy
 
     void Start()
     {
+        base.Start();
         Debug.Log("[Bear] Start() appelé");
 
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();

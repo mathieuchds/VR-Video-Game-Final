@@ -68,6 +68,8 @@ public class Devil : Enemy
 
     void Start()
     {
+        base.Start();
+
         agent = GetComponent<NavMeshAgent>();
 
         if (rb == null)

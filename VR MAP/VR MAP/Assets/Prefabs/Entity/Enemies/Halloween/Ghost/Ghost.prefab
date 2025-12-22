@@ -197,6 +197,7 @@ GameObject:
   - component: {fileID: 8542580237832391272}
   - component: {fileID: 7436440755927715163}
   - component: {fileID: 3892060949049276922}
+  - component: {fileID: 8026880720393964905}
   m_Layer: 0
   m_Name: Ghost
   m_TagString: Enemy
@@ -330,7 +331,6 @@ MonoBehaviour:
   spawner: {fileID: 0}
   flameEffectPrefab: {fileID: 8149814289637279443, guid: 0be142930fb141848b6a57277d63ddfc, type: 3}
   targetObject: {fileID: 0}
-  moveSpeed: 0.3
   floatHeight: 0.5
   floatAmplitude: 0.3
   floatFrequency: 1
@@ -420,6 +420,27 @@ CapsuleCollider:
   m_Height: 1.4275166
   m_Direction: 1
   m_Center: {x: 0, y: 0.54094017, z: 0}
+--- !u!65 &8026880720393964905
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8747757470087523455}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1.7745408, z: 1}
+  m_Center: {x: 0, y: 0.3872699, z: 0}
 --- !u!1 &8747757470159160704
 GameObject:
   m_ObjectHideFlags: 0

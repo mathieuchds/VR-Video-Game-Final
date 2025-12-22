@@ -45,6 +45,8 @@ public class Wizard : Enemy
 
     void Start()
     {
+        base.Start();
+
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (rb == null)
             rb = GetComponent<Rigidbody>();

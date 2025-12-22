@@ -27,7 +27,7 @@ public class Enemy : MonoBehaviour
     protected float poisonDuration = 3f;
 
     [SerializeField] protected GameObject flameEffectPrefab;
-    private GameObject currentFlame;
+    protected GameObject currentFlame;
 
 
     protected void Start()
@@ -36,8 +36,6 @@ public class Enemy : MonoBehaviour
         if (rb == null)
             rb = GetComponent<Rigidbody>();
 
-        // Si l'ennemi est pilot� par NavMeshAgent, on pr�f�re que le Rigidbody soit kinematic
-        // (�vite que l'agent "passe � travers" des obstacles g�r�s par la NavMesh).
         if (agent != null)
         {
             agent.updatePosition = true;
@@ -74,7 +72,11 @@ public class Enemy : MonoBehaviour
     public void ApplyBurn()
     {
         if (currentFlame != null)
-            return; 
+        {
+            Debug.Log(" Déjà en feu ");
+            return;
+        }
+            
 
         currentFlame = Instantiate(
             flameEffectPrefab,
@@ -116,8 +118,6 @@ public class Enemy : MonoBehaviour
             elapsed += Time.deltaTime;
             yield return null;
         }
-
-        currentFlame = null;
     }
 
 

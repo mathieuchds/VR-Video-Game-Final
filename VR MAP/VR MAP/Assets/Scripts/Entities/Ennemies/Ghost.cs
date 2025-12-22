@@ -52,6 +52,7 @@ public class Ghost : Enemy
 
     void Start()
     {
+        base.Start();
         // On ne laisse pas le NavMeshAgent déplacer le Ghost (on gère la trajectoire manuellement)
         agent = GetComponent<NavMeshAgent>();
         if (rb == null) rb = GetComponent<Rigidbody>();
@@ -169,6 +170,7 @@ public class Ghost : Enemy
 
             if (debugShowImpactRect) Debug.Log($"[Ghost:{name}] burnZoneInstance instancié et lancé.");
         }
+        
     }
 
     void Update()
