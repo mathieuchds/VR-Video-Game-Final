@@ -88,7 +88,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fedf68ab141568c4aa2e1dec3c8e79f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  level: 0
+  level: 1
   levelName: 
   isUnlocked: 0
 --- !u!114 &1793516351984105593

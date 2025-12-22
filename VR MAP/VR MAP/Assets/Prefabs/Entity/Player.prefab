@@ -431,7 +431,7 @@ MonoBehaviour:
   attackDamage: 50
   attackSpeed: 1.5
   defense: 5
-  moveSpeed: 5
+  moveSpeed: 3
   shockwaveRadius: 5
   shockwaveDamage: 20
   stunDuration: 2
@@ -444,6 +444,7 @@ MonoBehaviour:
   poisonDamage: 10
   poisonDuration: 3
   iceDuration: 2
+  score: 0
 --- !u!114 &8614792153822923984
 MonoBehaviour:
   m_ObjectHideFlags: 0

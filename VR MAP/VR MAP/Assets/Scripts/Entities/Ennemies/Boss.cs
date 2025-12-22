@@ -7,6 +7,15 @@ public class Boss : Enemy
     private int mode = 0;
     private Transform player;
 
+    public Transform laserSourceLeft; 
+    public Transform laserSourceRight; 
+    private LineRenderer lineLeft; 
+    private LineRenderer lineRight; 
+    private Vector3 currentLaserDirLeft; 
+    private Vector3 currentLaserDirRight; 
+    private Vector3 lockedDirLeft; 
+    private Vector3 lockedDirRight;
+
     [Header("Movement")]
     public float chaseSpeed = 3.5f;
     public float dashSpeed = 20f;
@@ -27,6 +36,14 @@ public class Boss : Enemy
     public float laserDamage = 11f;
     public float sweepSpeed = 5f;
     public float laserWidth = 0.1f;
+
+    [Header("Laser Phases")]
+    public float warningTime = 1.5f; 
+    public float laserDuration = 3f; 
+    public Color warningColor = Color.yellow; 
+    public Color activeColor = Color.red;
+
+
     public float sweepingDelay = 1f;
     private bool isSweeping = false;
 
@@ -44,47 +61,10 @@ public class Boss : Enemy
     {
         if (health > maxHealth * 0.60f)
             mode = 0;
-        else if (health > maxHealth * 0.25f)
+        else if (health > maxHealth * 0.40f)
             mode = 1;
         else
             mode = 2;
-    }
-
-
-    private System.Collections.IEnumerator SweepingLaser()
-    {
-        isSweeping = true;
-        Vector3 targetPos = player.position;
-
-        agent.isStopped = true;
-        yield return new WaitForSeconds(sweepingDelay);
-
-        float t = 0f;
-
-        while (t < 1f)
-        {
-            Vector3 origin = transform.position;
-            Vector3 targetDir = (targetPos - origin).normalized;
-            Vector3 currentDir = Vector3.Lerp(startDirection, targetDir, t);
-            Vector3 endPos = origin + currentDir * laserDistance;
-
-            line.SetPosition(0, origin);
-            line.SetPosition(1, endPos);
-
-            if (Physics.SphereCast(origin, laserWidth, currentDir, out RaycastHit hit, laserDistance))
-            {
-                if (hit.collider.CompareTag("Player"))
-                {
-                    hit.collider.GetComponent<PlayerStats>()?.TakeDamage(laserDamage);
-                }
-            }
-
-            t += Time.deltaTime * sweepSpeed;
-            yield return null;
-        }
-
-        agent.isStopped = false;
-        isSweeping = false;
     }
 
 
@@ -146,13 +126,25 @@ public class Boss : Enemy
 
         dashTimer = dashCooldown;
 
-        line = GetComponent<LineRenderer>();
+
+
+        gameStateManager = FindObjectOfType<GameStateManager>(true);
+
+        lineLeft = laserSourceLeft.GetComponent<LineRenderer>();
+        lineRight = laserSourceRight.GetComponent<LineRenderer>();
+        SetupLine(lineLeft);
+        SetupLine(lineRight);
+    }
+
+    void SetupLine(LineRenderer line)
+    {
         line.positionCount = 2;
         line.startWidth = laserWidth;
         line.endWidth = laserWidth;
-        line.enabled = true;
+        line.enabled = false;
 
-        gameStateManager = FindObjectOfType<GameStateManager>(true);
+        line.material = new Material(Shader.Find("Unlit/Color"));
+        line.material.color = warningColor;
     }
 
     private void Update()
@@ -189,6 +181,103 @@ public class Boss : Enemy
         }
     }
 
+    private System.Collections.IEnumerator SweepingLaser()
+    {
+        isSweeping = true;
 
- 
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+
+        lineLeft.enabled = true;
+        lineRight.enabled = true;
+
+        lineLeft.material.color = warningColor;
+        lineRight.material.color = warningColor;
+
+        float t = 0f;
+
+        while (t < warningTime)
+        {
+            UpdateLaserTracking();
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        lockedDirLeft = (player.position - laserSourceLeft.position).normalized;
+        lockedDirRight = (player.position - laserSourceRight.position).normalized;
+
+        lineLeft.material.color = activeColor;
+        lineRight.material.color = activeColor;
+
+        t = 0f;
+
+        while (t < laserDuration)
+        {
+            DrawLaser(laserSourceLeft, lockedDirLeft, lineLeft, true);
+            DrawLaser(laserSourceRight, lockedDirRight, lineRight, true);
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        lineLeft.enabled = false;
+        lineRight.enabled = false;
+
+        agent.isStopped = false;
+        isSweeping = false;
+    }
+
+
+    void UpdateLaserTracking()
+    {
+        currentLaserDirLeft =
+            (player.position - laserSourceLeft.position).normalized;
+
+        currentLaserDirRight =
+            (player.position - laserSourceRight.position).normalized;
+
+        DrawLaser(laserSourceLeft, currentLaserDirLeft, lineLeft, false);
+        DrawLaser(laserSourceRight, currentLaserDirRight, lineRight, false);
+    }
+
+
+    void DrawLaser(
+    Transform source,
+    Vector3 dir,
+    LineRenderer line,
+    bool dealDamage
+)
+    {
+        Vector3 origin = source.position + dir * 0.1f;
+        Vector3 end = origin + dir * laserDistance;
+
+        line.SetPosition(0, origin);
+        line.SetPosition(1, end);
+
+        if (!dealDamage)
+            return;
+
+        if (Physics.SphereCast(
+            origin,
+            laserWidth,
+            dir,
+            out RaycastHit hit,
+            laserDistance,
+            ~0,
+            QueryTriggerInteraction.Collide
+        ))
+        {
+            PlayerStats ps = hit.collider.GetComponentInParent<PlayerStats>();
+            if (ps != null)
+            {
+                ps.TakeDamage(laserDamage );
+            }
+        }
+    }
+
+
+
+
+
+
+
 }
