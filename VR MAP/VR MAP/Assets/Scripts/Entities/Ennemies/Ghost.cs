@@ -1,16 +1,16 @@
-using System.Collections;
+Ôªøusing System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(Light))]
 public class Ghost : Enemy
 {
-    [Header("RÈfÈrence Cible")]
+    [Header("R√©f√©rence Cible")]
     [SerializeField] private GameObject targetObject;
     private Transform target;
 
-    [Header("ParamËtres de Mouvement")]
-    // Utilise maintenant `speed` hÈritÈ de `Enemy` (public) pour Èviter plusieurs sources de vÈritÈ
+    [Header("Param√®tres de Mouvement")]
+    // Utilise maintenant `speed` h√©rit√© de `Enemy` (public) pour √©viter plusieurs sources de v√©rit√©
     [SerializeField] private float floatHeight = 1.5f;
     [SerializeField] private float floatAmplitude = 0.3f;
     [SerializeField] private float floatFrequency = 1f;
@@ -22,21 +22,21 @@ public class Ghost : Enemy
     [SerializeField] private float orbitSpeed = 1.5f;
     [SerializeField] private bool orbitClockwise = true;
     private float orbitAngle;
-    [Tooltip("Distance minimale entre le fantÙme et le joueur (Èvite qu'il 'colle')")]
+    [Tooltip("Distance minimale entre le fant√¥me et le joueur (√©vite qu'il 'colle')")]
     [SerializeField] private float minSeparation = 1.0f;
 
-    [Header("ParamËtres de DÈg‚ts")]
+    [Header("Param√®tres de D√©g√¢ts")]
     [SerializeField] private float damageRadius = 2.5f;
     [SerializeField] private float damageAmount = 10f;
     [SerializeField] private float damageInterval = 1f;
     private float nextDamageTime;
-    [Tooltip("TolÈrance verticale (m) pour considÈrer le joueur dans la zone")]
+    [Tooltip("Tol√©rance verticale (m) pour consid√©rer le joueur dans la zone")]
     [SerializeField] private float verticalTolerance = 1.2f;
 
-    [Header("Zone de DÈg‚ts Visuelle")]
+    [Header("Zone de D√©g√¢ts Visuelle")]
     [SerializeField] private Color damageZoneColor = new Color(1f, 0.3f, 0.1f);
     [SerializeField] private float lightIntensity = 3f;
-    [SerializeField] private GameObject burnZonePrefab; // prefab circulaire ‡ passer depuis l'inspector
+    [SerializeField] private GameObject burnZonePrefab; // prefab circulaire √† passer depuis l'inspector
     private GameObject burnZoneInstance;
 
     private Light damageLight;
@@ -48,27 +48,27 @@ public class Ghost : Enemy
 
     [Header("Debug")]
     [SerializeField] private bool debugShowImpactRect = true; // affiche le burnZone + logs
-    [SerializeField] private bool debugVerbose = false; // logs dÈtaillÈs
+    [SerializeField] private bool debugVerbose = false; // logs d√©taill√©s
 
     void Start()
     {
         base.Start();
-        // On ne laisse pas le NavMeshAgent dÈplacer le Ghost (on gËre la trajectoire manuellement)
+        // On ne laisse pas le NavMeshAgent d√©placer le Ghost (on g√®re la trajectoire manuellement)
         agent = GetComponent<NavMeshAgent>();
         if (rb == null) rb = GetComponent<Rigidbody>();
         if (agent != null)
             agent.enabled = false;
 
-        // SantÈ initiale (hÈritÈ)
+        // Sant√© initiale (h√©rit√©)
         health = maxHealth;
         if (healthBar != null) healthBar.SetHealth(1f);
 
-        // --- RÈsolution DU JOUEUR PAR TAG (PRIORITAIRE) ---
+        // --- R√©solution DU JOUEUR PAR TAG (PRIORITAIRE) ---
         var playerGO = GameObject.FindGameObjectWithTag("Player");
         if (playerGO != null)
         {
             target = playerGO.transform;
-            if (debugShowImpactRect) Debug.Log($"[Ghost:{name}] Player trouvÈ par tag: {playerGO.name}");
+            if (debugShowImpactRect) Debug.Log($"[Ghost:{name}] Player trouv√© par tag: {playerGO.name}");
         }
         else
         {
@@ -76,7 +76,7 @@ public class Ghost : Enemy
             if (pc != null)
             {
                 target = pc.transform;
-                if (debugShowImpactRect) Debug.Log($"[Ghost:{name}] Player trouvÈ par PlayerController: {pc.name}");
+                if (debugShowImpactRect) Debug.Log($"[Ghost:{name}] Player trouv√© par PlayerController: {pc.name}");
             }
             else if (targetObject != null)  
             {
@@ -85,7 +85,7 @@ public class Ghost : Enemy
             }
             else
             {
-                Debug.LogWarning($"[Ghost:{name}] Aucun Player trouvÈ (tag 'Player' manquant ou Player inactif). Le Ghost attendra.");
+                Debug.LogWarning($"[Ghost:{name}] Aucun Player trouv√© (tag 'Player' manquant ou Player inactif). Le Ghost attendra.");
             }
         }
 
@@ -104,14 +104,14 @@ public class Ghost : Enemy
         rendLocal = GetComponent<Renderer>() ?? GetComponentInChildren<Renderer>();
         if (rendLocal != null) baseColorLocal = rendLocal.material.color;
 
-        // Forcer collider trigger + rb kinematic pour Èviter de pousser le joueur
+        // Forcer collider trigger + rb kinematic pour √©viter de pousser le joueur
         Collider col = GetComponent<Collider>() ?? GetComponentInChildren<Collider>();
         if (col != null)
         {
             if (!col.isTrigger)
             {
                 col.isTrigger = true;
-                if (debugShowImpactRect) Debug.Log($"[Ghost:{name}] Collider mis en isTrigger pour Èviter poussÈe physique du joueur.");
+                if (debugShowImpactRect) Debug.Log($"[Ghost:{name}] Collider mis en isTrigger pour √©viter pouss√©e physique du joueur.");
             }
 
             if (GetComponent<Rigidbody>() == null)
@@ -138,7 +138,8 @@ public class Ghost : Enemy
             orbitAngle = Random.Range(0f, Mathf.PI * 2f);
         }
 
-        // instantiate burn zone visual if provided (force play)
+        // ‚ùå D√âSACTIV√â : instantiate burn zone visual
+        /*
         if (burnZonePrefab != null)
         {
             burnZoneInstance = Instantiate(burnZonePrefab, transform.position, Quaternion.identity, transform);
@@ -154,7 +155,7 @@ public class Ghost : Enemy
             if (rends != null && rends.Length > 0) hasVisible = true;
 
             if (!hasVisible)
-                Debug.LogWarning($"[Ghost:{name}] burnZonePrefab ne contient ni ParticleSystem ni Renderer visible. VÈrifie le prefab.");
+                Debug.LogWarning($"[Ghost:{name}] burnZonePrefab ne contient ni ParticleSystem ni Renderer visible. V√©rifie le prefab.");
 
             foreach (var ps in particles)
             {
@@ -168,21 +169,22 @@ public class Ghost : Enemy
                 if (!ps.isPlaying) ps.Play(true);
             }
 
-            if (debugShowImpactRect) Debug.Log($"[Ghost:{name}] burnZoneInstance instanciÈ et lancÈ.");
+            if (debugShowImpactRect) Debug.Log($"[Ghost:{name}] burnZoneInstance instanci√© et lanc√©.");
         }
+        */
         
     }
 
     void Update()
     {
-        // si on n'a pas encore de target, tenter de la trouver chaque frame (utile si le joueur spawn aprËs les fantÙmes)
+        // si on n'a pas encore de target, tenter de la trouver chaque frame (utile si le joueur spawn apr√®s les fant√¥mes)
         if (target == null)
         {
             var playerGO = GameObject.FindGameObjectWithTag("Player");
             if (playerGO != null && playerGO.activeInHierarchy)
             {
                 target = playerGO.transform;
-                if (debugShowImpactRect) Debug.Log($"[Ghost:{name}] Player trouvÈ tardivement par tag : {target.name}");
+                if (debugShowImpactRect) Debug.Log($"[Ghost:{name}] Player trouv√© tardivement par tag : {target.name}");
             }
             else
             {
@@ -190,7 +192,7 @@ public class Ghost : Enemy
                 if (pc != null && pc.gameObject.activeInHierarchy)
                 {
                     target = pc.transform;
-                    if (debugShowImpactRect) Debug.Log($"[Ghost:{name}] Player trouvÈ tardivement par PlayerController : {target.name}");
+                    if (debugShowImpactRect) Debug.Log($"[Ghost:{name}] Player trouv√© tardivement par PlayerController : {target.name}");
                 }
                 else if (targetObject != null && targetObject.activeInHierarchy)
                 {
@@ -225,12 +227,12 @@ public class Ghost : Enemy
             desiredPos = new Vector3(horizontalDesired.x, desiredPos.y, horizontalDesired.z);
         }
 
-        // interpolation, clamp pour stabiliser ó utilise `speed` hÈritÈ d'Enemy
+        // interpolation, clamp pour stabiliser ‚Äî utilise `speed` h√©rit√© d'Enemy
         transform.position = Vector3.Lerp(transform.position, desiredPos, Mathf.Clamp01(speed * Time.deltaTime));
 
         transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
 
-        UpdateBurnZone();
+        // ‚ùå D√âSACTIV√â : UpdateBurnZone();
         CheckDamageZone();
 
         if (debugVerbose)
@@ -239,6 +241,8 @@ public class Ghost : Enemy
         }
     }
 
+    // ‚ùå D√âSACTIV√â : M√©thode UpdateBurnZone compl√®te
+    /*
     private void UpdateBurnZone()
     {
         if (burnZoneInstance == null) return;
@@ -253,7 +257,7 @@ public class Ghost : Enemy
             if (!ps.isPlaying) ps.Play(true);
         }
 
-        // position au sol sous le fantÙme (centre des dÈg‚ts)
+        // position au sol sous le fant√¥me (centre des d√©g√¢ts)
         RaycastHit hit;
         Vector3 rayOrigin = transform.position + Vector3.up * 0.5f;
         if (Physics.Raycast(rayOrigin, Vector3.down, out hit, 10f))
@@ -285,15 +289,16 @@ public class Ghost : Enemy
             }
         }
     }
+    */
 
     private void CheckDamageZone()
     {
         if (Time.time < nextDamageTime) return;
 
-        // centre des dÈg‚ts = burnZone au sol si disponible (plus prÈcis)
-        Vector3 center = burnZoneInstance != null ? burnZoneInstance.transform.position : transform.position;
+        // centre des d√©g√¢ts = position du fant√¥me (burnZone d√©sactiv√©)
+        Vector3 center = transform.position;
 
-        // --- NOUVEAU : ignorer la hauteur -> distance calculÈe en XZ (plan horizontal) ---
+        // --- ignorer la hauteur -> distance calcul√©e en XZ (plan horizontal) ---
         if (target != null)
         {
             Vector3 delta = target.position - center;
@@ -304,10 +309,35 @@ public class Ghost : Enemy
 
             if (distXZ <= damageRadius)
             {
-                // APPLY RAW (ignore defense) DAMAGE from inspector
-                PlayerStats ps = target.GetComponent<PlayerStats>()
-                                 ?? target.GetComponentInParent<PlayerStats>()
-                                 ?? target.GetComponentInChildren<PlayerStats>();
+                // ‚úÖ CORRECTION : Recherche plus robuste de PlayerStats
+                PlayerStats ps = null;
+                
+                // M√©thode 1 : Sur le GameObject m√™me
+                ps = target.GetComponent<PlayerStats>();
+                
+                // M√©thode 2 : Sur le parent
+                if (ps == null)
+                    ps = target.GetComponentInParent<PlayerStats>();
+                
+                // M√©thode 3 : Sur les enfants
+                if (ps == null)
+                    ps = target.GetComponentInChildren<PlayerStats>();
+                
+                // M√©thode 4 : Recherche globale par tag
+                if (ps == null)
+                {
+                    GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
+                    if (playerGO != null)
+                        ps = playerGO.GetComponent<PlayerStats>();
+                }
+                
+                // M√©thode 5 : Recherche globale par type (fallback ultime)
+                if (ps == null)
+                {
+                    ps = FindObjectOfType<PlayerStats>();
+                    if (ps != null && debugShowImpactRect)
+                        Debug.LogWarning($"[Ghost:{name}] PlayerStats trouv√© via FindObjectOfType (fallback) sur {ps.gameObject.name}");
+                }
 
                 if (ps != null)
                 {
@@ -315,12 +345,12 @@ public class Ghost : Enemy
                     nextDamageTime = Time.time + damageInterval;
 
                     if (debugShowImpactRect)
-                        Debug.Log($"[Ghost:{name}] Applied RAW {damageAmount:F2} damage to player (distXZ={distXZ:F2})");
+                        Debug.Log($"[Ghost:{name}] ‚úÖ Applied RAW {damageAmount:F2} damage to {ps.gameObject.name} (distXZ={distXZ:F2})");
                 }
                 else
                 {
                     if (debugShowImpactRect)
-                        Debug.LogWarning($"[Ghost:{name}] PlayerStats non trouvÈ sur target {target.name}");
+                        Debug.LogError($"[Ghost:{name}] ‚ùå PlayerStats introuvable sur target '{target.name}' ni ailleurs ! V√©rifiez que PlayerStats est bien attach√© au joueur.");
                 }
 
                 return;
@@ -345,7 +375,10 @@ public class Ghost : Enemy
         {
             if (hitCollider.CompareTag("Player"))
             {
-                PlayerStats ps = hitCollider.GetComponent<PlayerStats>() ?? hitCollider.GetComponentInParent<PlayerStats>() ?? hitCollider.GetComponentInChildren<PlayerStats>();
+                PlayerStats ps = hitCollider.GetComponent<PlayerStats>() 
+                              ?? hitCollider.GetComponentInParent<PlayerStats>() 
+                              ?? hitCollider.GetComponentInChildren<PlayerStats>();
+                
                 if (ps != null)
                 {
                     Vector3 d = ps.transform.position - center;
@@ -369,20 +402,69 @@ public class Ghost : Enemy
         else
         {
             if (debugShowImpactRect)
-                Debug.Log($"[Ghost:{name}] Aucun joueur touchÈ ó vÈrifie Tag 'Player', Collider et Layer Collision Matrix.");
+                Debug.Log($"[Ghost:{name}] Aucun joueur touch√© ‚Äî v√©rifie Tag 'Player', Collider et Layer Collision Matrix.");
         }
     }
 
-    // On empÍche le contact damage hÈritÈ d'empiler en dÈfinissant un message vide
+    // On emp√™che le contact damage h√©rit√© d'empiler en d√©finissant un message vide
     private new void OnTriggerEnter(Collider other)
     {
-        // intentionally empty
+        // V√©rifier si c'est le joueur qui entre dans la zone
+        if (other.CompareTag("Player"))
+        {
+            if (debugShowImpactRect)
+                Debug.Log($"[Ghost:{name}] üëª Player entered trigger zone!");
+            
+            // On ne fait rien ici car CheckDamageZone() dans Update() g√®re d√©j√† les d√©g√¢ts p√©riodiques
+            // Mais on peut ajouter un effet visuel ou sonore ici si besoin
+        }
     }
+
+    // ‚úÖ NOUVEAU : D√©tecter quand le joueur sort de la zone
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            if (debugShowImpactRect)
+                Debug.Log($"[Ghost:{name}] üëã Player left trigger zone");
+        }
+    }
+
+    // ‚ùå D√âSACTIV√â : Appliquer les d√©g√¢ts dans OnTriggerStay (g√®re d√©j√† dans CheckDamageZone)
+    /*
+    private void OnTriggerStay(Collider other)
+    {
+        if (!other.CompareTag("Player")) return;
+        
+        // V√©rifier le cooldown des d√©g√¢ts
+        if (Time.time < nextDamageTime) return;
+        
+        // Rechercher PlayerStats
+        PlayerStats ps = other.GetComponent<PlayerStats>() 
+                      ?? other.GetComponentInParent<PlayerStats>() 
+                      ?? other.GetComponentInChildren<PlayerStats>();
+        
+        if (ps != null)
+        {
+            ps.ApplyRawDamage(damageAmount);
+            nextDamageTime = Time.time + damageInterval;
+            
+            if (debugShowImpactRect)
+                Debug.Log($"[Ghost:{name}] ‚úÖ Applied {damageAmount:F2} damage via OnTriggerStay");
+        }
+        else
+        {
+            if (debugShowImpactRect)
+                Debug.LogWarning($"[Ghost:{name}] ‚ö†Ô∏è PlayerStats non trouv√© sur {other.gameObject.name}");
+        }
+    }
+    */
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = new Color(1f, 0f, 0f, 0.25f);
-        Vector3 center = (burnZoneInstance != null) ? burnZoneInstance.transform.position : transform.position;
+        // ‚ùå MODIFI√â : utiliser transform.position au lieu de burnZoneInstance
+        Vector3 center = transform.position; // (burnZoneInstance != null) ? burnZoneInstance.transform.position : transform.position;
         Gizmos.DrawSphere(center, damageRadius);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(center, damageRadius);

@@ -51,46 +51,46 @@ MonoBehaviour:
   - {fileID: 1248815240492774, guid: 0d951fde96e634540b8b2e6e24760ff1, type: 3}
   - {fileID: 9061928882406066884, guid: a5cd9e2dda9cd37469157cba354c1148, type: 3}
   waves:
-  - count0: 1
+  - count0: 2
     count1: 0
     count2: 0
-    interval: 2
+    interval: 3
   - count0: 2
     count1: 1
     count2: 0
-    interval: 2
+    interval: 4
   - count0: 3
     count1: 2
     count2: 1
-    interval: 2
+    interval: 7
   - count0: 3
     count1: 3
     count2: 2
-    interval: 2
+    interval: 7
   - count0: 3
     count1: 3
     count2: 3
-    interval: 2
+    interval: 8
   - count0: 3
     count1: 3
     count2: 3
-    interval: 2
+    interval: 8
   - count0: 3
     count1: 3
     count2: 3
-    interval: 2
+    interval: 9
   - count0: 4
     count1: 3
     count2: 3
-    interval: 2
+    interval: 9
   - count0: 4
     count1: 3
     count2: 3
-    interval: 2
+    interval: 9
   - count0: 4
     count1: 3
     count2: 3
-    interval: 2
+    interval: 9
   minibossStats:
     healthMultiplier: 3
     damageMultiplier: 2
@@ -98,6 +98,7 @@ MonoBehaviour:
   minInterval: 0.05
   countGrowthPerExtraWave: 1.15
   intervalReductionPerWave: 0.05
+  intervalVariability: 0.757
   onWaveCompleted:
     m_PersistentCalls:
       m_Calls: []

@@ -1,16 +1,17 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class QuestManager : MonoBehaviour
 {
-
     public static QuestManager Instance;
     public QuestUIManager questUI;
 
     private Quest currentQuest;
-    private ReachZone reachZone;
+    
+    // ✅ MODIFIÉ : Référence publique pour assigner depuis l'Inspector
+    [Header("References")]
+    [SerializeField] private ReachZone reachZone;
 
     private int questIndex = 0;
-
 
     void Awake()
     {
@@ -22,13 +23,32 @@ public class QuestManager : MonoBehaviour
 
     void Start()
     {
-        reachZone = FindObjectOfType<ReachZone>();
+        // ✅ MODIFIÉ : Rechercher avec includeInactive = true si non assigné
+        if (reachZone == null)
+        {
+            reachZone = FindObjectOfType<ReachZone>(true); // true = chercher aussi les objets inactifs
+            
+            if (reachZone == null)
+            {
+                Debug.LogError("[QuestManager] ❌ ReachZone introuvable dans la scène ! Créez un GameObject avec le script ReachZone.");
+            }
+            else
+            {
+                Debug.Log($"[QuestManager] ✅ ReachZone trouvée: {reachZone.gameObject.name}");
+            }
+        }
+        
+        // S'assurer que la ReachZone est désactivée au démarrage
+        if (reachZone != null)
+        {
+            reachZone.Deactivate();
+        }
+        
         questIndex = -1;
         StartNextQuest();
-
     }
 
-    public void StartQuest(string title, string description, QuestObjectiveType type,float target)
+    public void StartQuest(string title, string description, QuestObjectiveType type, float target)
     {
         currentQuest = new Quest(title, description, type, target);
         questUI.ShowQuest();
@@ -37,7 +57,6 @@ public class QuestManager : MonoBehaviour
 
     public void AddProgress(QuestObjectiveType type, float amount = 1f)
     {
-        if (currentQuest == null) return;
         if (currentQuest == null) return;
         if (currentQuest.IsCompleted) return;
 
@@ -65,6 +84,13 @@ public class QuestManager : MonoBehaviour
 
     void CompleteQuest()
     {
+        // Désactiver la ReachZone quand une quête est complétée
+        if (reachZone != null && currentQuest != null && currentQuest.objectiveType == QuestObjectiveType.ReachZone)
+        {
+            reachZone.Deactivate();
+            Debug.Log("[QuestManager] ReachZone désactivée après complétion");
+        }
+        
         questUI.HideQuest();
         PowerSelectionManager psm = FindObjectOfType<PowerSelectionManager>();
         if (psm != null)
@@ -74,10 +100,14 @@ public class QuestManager : MonoBehaviour
         Invoke(nameof(StartNextQuest), 1f);
     }
 
-
-
     void StartNextQuest()
     {
+        // Désactiver la ReachZone avant de démarrer une nouvelle quête
+        if (reachZone != null)
+        {
+            reachZone.Deactivate();
+        }
+        
         questIndex++;
 
         switch (questIndex % 3)
@@ -104,6 +134,14 @@ public class QuestManager : MonoBehaviour
             QuestObjectiveType.KillEnemy,
             25
         );
+        
+        // S'assurer que la zone est désactivée pour cette quête
+        if (reachZone != null)
+        {
+            reachZone.Deactivate();
+        }
+        
+        Debug.Log("[QuestManager] 🎯 Quête Kill démarrée");
     }
 
     void StartReachZoneQuest()
@@ -115,7 +153,16 @@ public class QuestManager : MonoBehaviour
             1
         );
 
-        reachZone.ActivateRandom();
+        // Activer la zone seulement pour cette quête
+        if (reachZone != null)
+        {
+            reachZone.ActivateRandom();
+            Debug.Log($"[QuestManager] 🎯 Quête ReachZone démarrée - Zone activée à {reachZone.transform.position}");
+        }
+        else
+        {
+            Debug.LogError("[QuestManager] ❌ ReachZone introuvable ! Impossible de démarrer la quête. Vérifiez que le GameObject ReachZone existe dans la scène.");
+        }
     }
 
     void StartShootQuest()
@@ -126,10 +173,13 @@ public class QuestManager : MonoBehaviour
             QuestObjectiveType.ShootBullets,
             50
         );
+        
+        // S'assurer que la zone est désactivée pour cette quête
+        if (reachZone != null)
+        {
+            reachZone.Deactivate();
+        }
+        
+        Debug.Log("[QuestManager] 🎯 Quête Shoot démarrée");
     }
-
-
-
-
-
 }

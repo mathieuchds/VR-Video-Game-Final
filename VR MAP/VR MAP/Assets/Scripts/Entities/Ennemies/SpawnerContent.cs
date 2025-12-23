@@ -77,6 +77,11 @@ public class SpawnerContent : MonoBehaviour
     [SerializeField, Tooltip("Facteur de réduction d'intervalle par vague (plus la vague est haute, plus c'est rapide)")]
     private float intervalReductionPerWave = 0.05f;
 
+    // ✅ NOUVEAU : Variabilité de l'intervalle
+    [Header("Interval Variability")]
+    [SerializeField, Tooltip("Variabilité de l'intervalle en pourcentage (0.5 = ±50%)"), Range(0f, 1f)]
+    private float intervalVariability = 0.5f;
+
     [Header("Events")]
     [SerializeField] private UnityEvent onWaveCompleted;
 
@@ -334,7 +339,7 @@ public class SpawnerContent : MonoBehaviour
         if (spawnerType == SpawnerType.Miniboss)
             Debug.Log($"[SpawnerContent] 👹 Miniboss spawner '{name}' va spawner {remainingTotal} ennemi(s)");
 
-        float interval = Mathf.Max(minInterval, baseInterval);
+        float baseIntervalClamped = Mathf.Max(minInterval, baseInterval);
 
         System.Random rnd = new System.Random();
         while (remainingTotal > 0)
@@ -368,7 +373,13 @@ public class SpawnerContent : MonoBehaviour
             baseCounts[choice]--;
             remainingTotal--;
 
-            yield return new WaitForSeconds(interval);
+            // ✅ NOUVEAU : Calculer l'intervalle avec variabilité aléatoire
+            float randomizedInterval = CalculateRandomInterval(baseIntervalClamped);
+            
+            if (debugMode)
+                Debug.Log($"[SpawnerContent] Intervalle: {randomizedInterval:F2}s (base: {baseIntervalClamped:F2}s, variabilité: ±{intervalVariability * 100}%)");
+
+            yield return new WaitForSeconds(randomizedInterval);
         }
 
         spawnCoroutine = null;
@@ -377,6 +388,24 @@ public class SpawnerContent : MonoBehaviour
         
         if (spawnerType == SpawnerType.Miniboss)
             Debug.Log($"[SpawnerContent] ✅ Miniboss spawner '{name}' terminé pour vague {waveNumber}");
+    }
+
+    /// <summary>
+    /// ✅ NOUVEAU : Calcule un intervalle aléatoire avec variabilité
+    /// </summary>
+    /// <param name="baseInterval">Intervalle de base en secondes</param>
+    /// <returns>Intervalle randomisé entre (base * (1 - variability)) et (base * (1 + variability))</returns>
+    private float CalculateRandomInterval(float baseInterval)
+    {
+        // Calculer les bornes min et max
+        float minRange = baseInterval * (1f - intervalVariability);
+        float maxRange = baseInterval * (1f + intervalVariability);
+        
+        // Générer un nombre aléatoire entre min et max
+        float randomInterval = UnityEngine.Random.Range(minRange, maxRange);
+        
+        // S'assurer que l'intervalle ne descend pas en dessous du minInterval absolu
+        return Mathf.Max(minInterval, randomInterval);
     }
 
     private void ApplyMinibossModifiers(GameObject enemy)

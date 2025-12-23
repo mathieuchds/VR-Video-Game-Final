@@ -151,7 +151,15 @@ public class LevelManagement : MonoBehaviour
         enemiesKilledThisWave = 0;
         trackedEnemies.Clear();
 
-        // ✅ Afficher la transition de la vague 1 avant de commencer
+        // ✅ NOUVEAU : S'assurer que le canvas de jeu est visible avant de commencer
+        if (gameStateManager != null)
+        {
+            gameStateManager.SetWaveTransitionMode(false);
+            if (debugMode)
+                Debug.Log("[LevelManagement] ✅ Canvas de jeu forcé visible au démarrage");
+        }
+
+        // Afficher la transition de la vague 1 avant de commencer
         StartCoroutine(ShowWaveTransitionAndStart(levelData.level));
     }
 

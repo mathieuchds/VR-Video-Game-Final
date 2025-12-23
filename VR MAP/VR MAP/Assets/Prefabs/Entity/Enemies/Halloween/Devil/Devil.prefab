@@ -2130,7 +2130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthBar: {fileID: 5447531733573054149}
-  maxHealth: 150
+  maxHealth: 50
   health: 0
   contactDamage: 10
   speed: 3

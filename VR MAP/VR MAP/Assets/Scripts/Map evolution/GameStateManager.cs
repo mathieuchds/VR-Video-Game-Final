@@ -781,21 +781,26 @@ public class GameStateManager : MonoBehaviour
     /// </summary>
     public void SetWaveTransitionMode(bool isInTransition)
     {
-        LogDebug($"[GameStateManager] SetWaveTransitionMode({isInTransition})");
+        if (enableDebugLogs)
+            Debug.Log($"[GameStateManager] SetWaveTransitionMode: {isInTransition}");
 
         if (isInTransition)
         {
-            // Masquer les canvas du joueur pendant la transition
+            // ✅ Masquer complètement le canvas de jeu pendant la transition
             SetCanvasActive(gameCanvas, false);
-            SetCanvasActive(powerUpCanvas, false);
+            
+            if (enableDebugLogs)
+                Debug.Log("[GameStateManager] Canvas de jeu masqué pour transition de vague");
         }
         else
         {
-            // Réafficher les canvas du joueur après la transition
+            // ✅ Réafficher le canvas de jeu après la transition
             if (currentState == GameState.Game)
             {
                 SetCanvasActive(gameCanvas, true);
-                SetCanvasActive(powerUpCanvas, true);
+                
+                if (enableDebugLogs)
+                    Debug.Log("[GameStateManager] Canvas de jeu réaffiché après transition");
             }
         }
     }

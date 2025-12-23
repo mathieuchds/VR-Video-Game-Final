@@ -99,10 +99,10 @@ MonoBehaviour:
   snowMaxWave: 10
   rainMinDensity: 50
   rainMaxDensity: 200
-  rainHeightAbovePlayer: 20
+  rainHeightAbovePlayer: 8
   rainEffectRadius: 30
-  rainGridSize: 5
-  rainGridSpacing: 50
+  rainGridSize: 7
+  rainGridSpacing: 10
   snowMinDensity: 300
   snowMaxDensity: 500
   snowParticleSizeMultiplier: 0.01

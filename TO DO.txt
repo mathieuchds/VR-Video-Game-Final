@@ -12,4 +12,4 @@
 - ajouter aleatoire sur quand es ce que les mobs spawn pour pas qu'ils arrivent d'un coup
 - probleme de slow et stun à regler
 - effet visuel de stun
-
+- trouver le lag probablement particules fantome
