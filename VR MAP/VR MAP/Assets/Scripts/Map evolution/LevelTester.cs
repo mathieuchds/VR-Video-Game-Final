@@ -22,7 +22,6 @@ public class LevelTester : MonoBehaviour
 
     void Update()
     {
-        // Démarrer/arrêter la coroutine selon l'état de la case dans l'inspecteur (seulement en Play Mode)
         if (testMode && runningCoroutine == null && Application.isPlaying)
         {
             runningCoroutine = StartCoroutine(IncrementLevelRoutine());
@@ -42,13 +41,11 @@ public class LevelTester : MonoBehaviour
         {
             yield return new WaitForSeconds(intervalSeconds);
 
-            // Sécurité : re-vérifier l'existence et la limite
             if (levelData == null) yield break;
 
             levelData.level = Mathf.Min(levelData.level + 1, 10);
             Debug.Log($"[LevelTester] Level incrémenté -> {levelData.level}");
 
-            // Si atteint 10, on arrête automatiquement et décoche la case pour éviter boucle inutile
             if (levelData.level >= 10)
             {
                 testMode = false;
@@ -60,7 +57,6 @@ public class LevelTester : MonoBehaviour
         runningCoroutine = null;
     }
 
-    // Optionnel : expose une méthode publique pour démarrer/stopper depuis d'autres scripts
     public void SetTestMode(bool enabled)
     {
         testMode = enabled;

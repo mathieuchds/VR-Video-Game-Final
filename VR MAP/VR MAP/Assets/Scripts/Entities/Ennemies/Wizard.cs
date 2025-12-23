@@ -1,13 +1,8 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-/// <summary>
-/// Ennemi "Sorcier" : se déplace vers le joueur mais s'arrête à une distance minimale.
-/// Tire des boules de feu en direction du joueur quand il est à portée (<= stopDistance).
-/// Le spawn du projectile DOIT être effectué depuis l'Animation Event qui appelle ShootAtTarget().
-/// </summary>
-[RequireComponent(typeof(NavMeshAgent))
-]
+
+
 public class Wizard : Enemy
 {
     [Header("Références")]
@@ -76,8 +71,6 @@ public class Wizard : Enemy
 
         if (target == null)
             Debug.LogWarning($"[Wizard:{name}] Aucun target trouvé (tag Player ou targetObject).");
-        else
-            Debug.Log($"[Wizard:{name}] Target trouvé : {target.name}");
 
         Debug.Log($"[Wizard:{name}] stopDistance={stopDistance}, attackCooldown={attackCooldown}");
 
@@ -97,15 +90,14 @@ public class Wizard : Enemy
 
         if (target == null)
         {
-            Debug.LogWarning($"[Wizard:{name}] ❌ Target null, pas de mouvement");
+            Debug.LogWarning($"[Wizard:{name}] Target null, pas de mouvement");
             return;
         }
 
         float dist = Vector3.Distance(transform.position, target.position);
         bool shouldRun = dist > (stopDistance + epsilon);
 
-        // ✅ Debug détaillé
-        if (Time.frameCount % 60 == 0) // Log toutes les 60 frames
+        if (Time.frameCount % 60 == 0) 
         {
             Debug.Log($"[Wizard:{name}] dist={dist:F2}, shouldRun={shouldRun}, isStunned={isStunned}, agent. enabled={agent?.enabled}, isOnNavMesh={agent?.isOnNavMesh}");
         }
@@ -127,7 +119,7 @@ public class Wizard : Enemy
             }
             else
             {
-                Debug.LogWarning($"[Wizard:{name}] ❌ Agent problème:  enabled={agent?.enabled}, onNavMesh={agent?.isOnNavMesh}");
+                Debug.LogWarning($"[Wizard:{name}] Agent problème:  enabled={agent?.enabled}, onNavMesh={agent?.isOnNavMesh}");
             }
 
             // Mettre à jour l'Animator
@@ -172,15 +164,11 @@ public class Wizard : Enemy
                 Debug.Log($"[Wizard:{name}] Déclenche trigger Shoot sur Animator.");
                 animator.SetTrigger(ParamShoot);
 
-                // Ne pas spawner depuis le script : le projectile DOIT être instancié par l'Animation Event
-                // On attend un petit délai pour laisser l'animation démarrer (optionnel)
                 yield return new WaitForSeconds(attackDelayAfterTrigger);
             }else{
-                // Si pas d'Animator (fallback) on déclenche directement le spawn
                 ShootAtTarget();
             }
 
-            // cooldown entre attaques
             yield return new WaitForSeconds(attackCooldown);
         }
     }
@@ -203,10 +191,8 @@ public class Wizard : Enemy
         // Direction vers la cible
         Vector3 dir = (aimPoint - spawnPos).normalized;
 
-        // ✅ Instancier le projectile
         GameObject b = Instantiate(fireballPrefab, spawnPos, Quaternion.LookRotation(dir));
 
-        // ✅ APPELER SetDirection pour que le projectile bouge ! 
         FireBall fb = b.GetComponent<FireBall>();
         if (fb != null)
         {
@@ -220,17 +206,13 @@ public class Wizard : Enemy
             Debug.LogError($"[Wizard:{name}] ❌ Pas de script FireBall sur le prefab !");
         }
 
-        // ✅ Configurer le Rigidbody (kinematic, PAS de velocity)
         Rigidbody rb = b.GetComponent<Rigidbody>();
         if (rb != null)
         {
             rb.useGravity = false;
             rb.isKinematic = true;
-            // ⚠️ NE PAS utiliser linearVelocity sur un kinematic !
-            // Le mouvement est géré par FireBall. Update() avec transform.position
         }
 
-        // Détruire après projectileLifetime secondes
         Destroy(b, projectileLifetime);
 
         Debug.Log($"[Wizard:{name}] Projectile tiré vers {target.name}");

@@ -24,7 +24,6 @@ public class GunShooter : MonoBehaviour
         }
             
 
-        // partie physique du projectile
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
         rb.AddForce(muzzle.forward * shootForce);
 
@@ -37,7 +36,6 @@ public class GunShooter : MonoBehaviour
     {
         GameObject bomba = Instantiate(bombaPrefab, muzzle.position, muzzle.rotation);
 
-        // partie physique du projectile
         Rigidbody rb = bomba.GetComponent<Rigidbody>();
         rb.AddForce(muzzle.forward * shootForce);
 
@@ -50,7 +48,6 @@ public class GunShooter : MonoBehaviour
 
         if (module == null)
         {
-            //Debug.LogError("Module not found: " + moduleName);
             return;
         }
 

@@ -21,24 +21,17 @@ public class Heal : MonoBehaviour
 
     private void Awake()
     {
-        // Trouver le HealSpawnManager (si présent)
         spawnManager = FindObjectOfType<HealSpawnManager>();
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Active le heal directement sans téléportation
-    /// Utilisé par le HealSpawnManager
-    /// </summary>
+
     public void ActivateDirectly()
     {
         isActive = true;
         gameObject.SetActive(true);
     }
 
-    /// <summary>
-    /// Active le heal à une position aléatoire
-    /// ⚠️ LEGACY : Utilisé pour l'ancien système (un seul heal)
-    /// </summary>
+
     public void ActivateRandom()
     {
         if (possiblePositions != null && possiblePositions.Length > 0)
@@ -66,27 +59,21 @@ public class Heal : MonoBehaviour
             PlayerStats ps = other.GetComponent<PlayerStats>();
             if (ps != null)
             {
-                // ✅ NOUVEAU : Spawner l'effet de particules avant de détruire
                 SpawnHealVFX(transform.position);
 
                 ps.Heal(heal);
 
-                // Notifier le HealSpawnManager (si présent)
                 if (spawnManager != null)
                 {
                     spawnManager.OnHealCollected(gameObject);
                 }
 
-                // Détruire l'instance (le manager en créera de nouvelles à la prochaine vague)
                 Destroy(gameObject);
             }
         }
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Spawner l'effet de particules à la position de collecte
-    /// </summary>
-    /// <param name="position">Position où spawner l'effet</param>
+
     private void SpawnHealVFX(Vector3 position)
     {
         if (healVFXPrefab == null)
@@ -95,31 +82,24 @@ public class Heal : MonoBehaviour
             return;
         }
 
-        // Instancier le VFX à la position du heal
         GameObject vfxInstance = Instantiate(healVFXPrefab, position, Quaternion.identity);
 
-        // Ajuster la taille des particules
         vfxInstance.transform.localScale = Vector3.one * particleScale;
 
-        // Vérifier si le prefab a un Particle System pour gérer la durée automatiquement
         ParticleSystem ps = vfxInstance.GetComponent<ParticleSystem>();
         if (ps != null)
         {
-            // S'assurer que le Particle System joue
             if (!ps.isPlaying)
                 ps.Play();
 
-            // Ajuster le shape radius si présent
             var shape = ps.shape;
             shape.radius *= particleScale;
 
-            // Détruire automatiquement après la durée du Particle System
             float duration = ps.main.duration + ps.main.startLifetime.constantMax;
             Destroy(vfxInstance, duration);
         }
         else
         {
-            // Fallback : détruire après vfxLifetime secondes
             Destroy(vfxInstance, vfxLifetime);
         }
     }

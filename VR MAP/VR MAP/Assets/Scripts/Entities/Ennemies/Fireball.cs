@@ -8,8 +8,8 @@ public class FireBall : MonoBehaviour
 
     [Header("Raycast Settings")]
     [SerializeField] private float sphereRadius = 0.8f;
-    [Tooltip("Layers que la fireball peut toucher (exclure les projectiles du joueur)")]
-    [SerializeField] private LayerMask hitLayers = ~0; // Par défaut : tout
+    [Tooltip("Layers que la fireball peut toucher")]
+    [SerializeField] private LayerMask hitLayers = ~0; 
 
     private bool hasHit = false;
     private Vector3 lastPosition;
@@ -32,7 +32,6 @@ public class FireBall : MonoBehaviour
         float distanceThisFrame = speed * Time.fixedDeltaTime;
         Vector3 nextPosition = currentPosition + direction * distanceThisFrame;
 
-        // ✅ RAYCAST avec LayerMask pour ignorer certains objets
         float totalDistance = Vector3.Distance(lastPosition, nextPosition);
 
         RaycastHit hit;
@@ -40,10 +39,8 @@ public class FireBall : MonoBehaviour
         {
             Debug.DrawLine(lastPosition, hit.point, Color.red, 1f);
 
-            // ✅ Ignorer les projectiles du joueur par tag
             if (hit.collider.CompareTag("PlayerProjectile"))
             {
-                // Ignorer et continuer
                 return;
             }
 
@@ -55,15 +52,12 @@ public class FireBall : MonoBehaviour
                 if (ps != null)
                 {
                     ps.TakeDamage(damage);
-                    Debug.Log($"[FireBall] ✅ {damage} dégâts infligés via RAYCAST!");
                 }
 
                 Destroy(gameObject);
                 return;
             }
         }
-
-        // Déplacer
         transform.position = nextPosition;
         lastPosition = nextPosition;
     }
@@ -72,10 +66,9 @@ public class FireBall : MonoBehaviour
     {
         if (hasHit || other.gameObject == gameObject) return;
 
-        // ✅ Ignorer les projectiles du joueur
         if (other.CompareTag("PlayerProjectile"))
         {
-            return; // Ne pas détruire la fireball
+            return;
         }
 
         if (other.CompareTag("Player"))
@@ -85,7 +78,6 @@ public class FireBall : MonoBehaviour
             if (ps != null)
             {
                 ps.TakeDamage(damage);
-                Debug.Log($"[FireBall] ✅ {damage} dégâts infligés via TRIGGER!");
             }
             Destroy(gameObject);
         }

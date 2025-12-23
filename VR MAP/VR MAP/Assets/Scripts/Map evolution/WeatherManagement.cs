@@ -5,7 +5,7 @@ public class WeatherManagement : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private LevelData levelData;
-    [SerializeField] private Transform player; // Pour suivre le joueur
+    [SerializeField] private Transform player; 
 
     [Header("Weather Prefabs")]
     [Tooltip("Prefab de l'effet de pluie (Particle System)")]
@@ -60,7 +60,6 @@ public class WeatherManagement : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool debugMode = false;
 
-    // Instances actuelles des effets (plusieurs pour couvrir la map)
     private List<GameObject> currentRainInstances = new List<GameObject>();
     private List<GameObject> currentSnowInstances = new List<GameObject>();
 
@@ -68,7 +67,6 @@ public class WeatherManagement : MonoBehaviour
 
     private void Awake()
     {
-        // Trouver les références si non assignées
         if (levelData == null)
             levelData = FindObjectOfType<LevelData>();
 
@@ -99,7 +97,6 @@ public class WeatherManagement : MonoBehaviour
     {
         if (levelData == null) return;
 
-        // Détecter le changement de niveau
         if (levelData.level != lastLevel)
         {
             lastLevel = levelData.level;
@@ -113,9 +110,7 @@ public class WeatherManagement : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Met à jour les effets météo en fonction de la vague actuelle
-    /// </summary>
+
     private void UpdateWeather(int wave)
     {
         if (debugMode)
@@ -152,42 +147,32 @@ public class WeatherManagement : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Calcule la densité de pluie en fonction de la progression des vagues
-    /// </summary>
     private float CalculateRainDensity(int currentWave)
     {
         float progress = Mathf.Clamp01((float)(currentWave - rainStartWave) / (rainMaxWave - rainStartWave));
         return Mathf.Lerp(rainMinDensity, rainMaxDensity, progress);
     }
 
-    /// <summary>
-    /// Calcule la densité de neige en fonction de la progression des vagues
-    /// </summary>
     private float CalculateSnowDensity(int currentWave)
     {
         float progress = Mathf.Clamp01((float)(currentWave - snowStartWave) / (snowMaxWave - snowStartWave));
         return Mathf.Lerp(snowMinDensity, snowMaxDensity, progress);
     }
 
-    /// <summary>
-    /// Active l'effet de pluie avec une densité donnée (plusieurs instances en grille)
-    /// </summary>
+
     private void ActivateRain(float density)
     {
-        // Si pas encore créé, instancier plusieurs instances en grille
         if (currentRainInstances.Count == 0 && rainPrefab != null)
         {
-            Vector3 centerPos = GetRainSpawnPosition(); // ✅ MODIFIÉ : Position spécifique à la pluie
+            Vector3 centerPos = GetRainSpawnPosition(); 
             
-            // Créer une grille d'instances avec la taille spécifique à la pluie
-            int halfGrid = rainGridSize / 2; // ✅ MODIFIÉ
+            int halfGrid = rainGridSize / 2; 
             
             for (int x = -halfGrid; x <= halfGrid; x++)
             {
                 for (int z = -halfGrid; z <= halfGrid; z++)
                 {
-                    Vector3 offset = new Vector3(x * rainGridSpacing, 0, z * rainGridSpacing); // ✅ MODIFIÉ
+                    Vector3 offset = new Vector3(x * rainGridSpacing, 0, z * rainGridSpacing);
                     Vector3 spawnPos = centerPos + offset;
                     
                     // Rotation de 90° sur l'axe X pour orienter la pluie vers le bas
@@ -208,17 +193,16 @@ public class WeatherManagement : MonoBehaviour
                     emission.rateOverTime = density;
 
                     var shape = ps.shape;
-                    shape.radius = rainEffectRadius; // ✅ MODIFIÉ
+                    shape.radius = rainEffectRadius; 
 
                     currentRainInstances.Add(instance);
                 }
             }
 
             if (debugMode)
-                Debug.Log($"[WeatherManagement] 🌧️ {currentRainInstances.Count} instances de pluie créées en grille {rainGridSize}x{rainGridSize}");
+                Debug.Log($"[WeatherManagement] {currentRainInstances.Count} instances de pluie créées en grille {rainGridSize}x{rainGridSize}");
         }
 
-        // Mettre à jour la densité de toutes les instances
         foreach (var instance in currentRainInstances)
         {
             if (instance == null) continue;
@@ -235,27 +219,23 @@ public class WeatherManagement : MonoBehaviour
         }
 
         if (debugMode && currentRainInstances.Count > 0)
-            Debug.Log($"[WeatherManagement] 🌧️ Densité pluie mise à jour: {density} sur {currentRainInstances.Count} instances");
+            Debug.Log($"[WeatherManagement] Densité pluie mise à jour: {density} sur {currentRainInstances.Count} instances");
     }
 
-    /// <summary>
-    /// Active l'effet de neige avec une densité donnée (plusieurs instances en grille)
-    /// </summary>
+
     private void ActivateSnow(float density)
     {
-        // Si pas encore créé, instancier plusieurs instances en grille
         if (currentSnowInstances.Count == 0 && snowPrefab != null)
         {
-            Vector3 centerPos = GetSnowSpawnPosition(); // ✅ MODIFIÉ : Position spécifique à la neige
-            
-            // Créer une grille d'instances avec la taille spécifique à la neige
-            int halfGrid = snowGridSize / 2; // ✅ MODIFIÉ
+            Vector3 centerPos = GetSnowSpawnPosition(); 
+
+            int halfGrid = snowGridSize / 2; 
             
             for (int x = -halfGrid; x <= halfGrid; x++)
             {
                 for (int z = -halfGrid; z <= halfGrid; z++)
                 {
-                    Vector3 offset = new Vector3(x * snowGridSpacing, 0, z * snowGridSpacing); // ✅ MODIFIÉ
+                    Vector3 offset = new Vector3(x * snowGridSpacing, 0, z * snowGridSpacing); 
                     Vector3 spawnPos = centerPos + offset;
                     
                     // Rotation de 180° sur l'axe X pour la neige
@@ -276,7 +256,7 @@ public class WeatherManagement : MonoBehaviour
                     emission.rateOverTime = density;
 
                     var shape = ps.shape;
-                    shape.radius = snowEffectRadius; // ✅ MODIFIÉ
+                    shape.radius = snowEffectRadius;
 
                     // Réduire la taille des particules de neige
                     var main = ps.main;
@@ -310,9 +290,7 @@ public class WeatherManagement : MonoBehaviour
             Debug.Log($"[WeatherManagement] ❄️ Densité neige mise à jour: {density} sur {currentSnowInstances.Count} instances");
     }
 
-    /// <summary>
-    /// Désactive l'effet de pluie
-    /// </summary>
+
     private void DeactivateRain()
     {
         foreach (var instance in currentRainInstances)
@@ -330,12 +308,9 @@ public class WeatherManagement : MonoBehaviour
         currentRainInstances.Clear();
 
         if (debugMode)
-            Debug.Log("[WeatherManagement] 🌧️ Toutes les instances de pluie arrêtées");
+            Debug.Log("[WeatherManagement] Toutes les instances de pluie arrêtées");
     }
 
-    /// <summary>
-    /// Désactive l'effet de neige
-    /// </summary>
     private void DeactivateSnow()
     {
         foreach (var instance in currentSnowInstances)
@@ -356,9 +331,7 @@ public class WeatherManagement : MonoBehaviour
             Debug.Log("[WeatherManagement] ❄️ Toutes les instances de neige arrêtées");
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Retourne la position de spawn spécifique à la pluie
-    /// </summary>
+
     private Vector3 GetRainSpawnPosition()
     {
         if (player != null)
@@ -371,9 +344,7 @@ public class WeatherManagement : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Retourne la position de spawn spécifique à la neige
-    /// </summary>
+
     private Vector3 GetSnowSpawnPosition()
     {
         if (player != null)
@@ -386,16 +357,13 @@ public class WeatherManagement : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Met à jour la position de l'effet météo pour suivre le joueur
-    /// </summary>
+
     private void UpdateWeatherPosition()
     {
-        // Mettre à jour toutes les instances de pluie
         if (currentRainInstances.Count > 0)
         {
-            Vector3 rainCenterPos = GetRainSpawnPosition(); // ✅ MODIFIÉ
-            int rainHalfGrid = rainGridSize / 2; // ✅ MODIFIÉ
+            Vector3 rainCenterPos = GetRainSpawnPosition(); 
+            int rainHalfGrid = rainGridSize / 2; 
 
             int rainIndex = 0;
             for (int x = -rainHalfGrid; x <= rainHalfGrid; x++)
@@ -412,11 +380,10 @@ public class WeatherManagement : MonoBehaviour
             }
         }
 
-        // Mettre à jour toutes les instances de neige
         if (currentSnowInstances.Count > 0)
         {
-            Vector3 snowCenterPos = GetSnowSpawnPosition(); // ✅ MODIFIÉ
-            int snowHalfGrid = snowGridSize / 2; // ✅ MODIFIÉ
+            Vector3 snowCenterPos = GetSnowSpawnPosition(); 
+            int snowHalfGrid = snowGridSize / 2; 
 
             int snowIndex = 0;
             for (int x = -snowHalfGrid; x <= snowHalfGrid; x++)
@@ -434,18 +401,14 @@ public class WeatherManagement : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Nettoie les effets à la destruction du script
-    /// </summary>
+
     private void OnDestroy()
     {
         DeactivateRain();
         DeactivateSnow();
     }
 
-    /// <summary>
-    /// Méthode publique pour forcer la mise à jour de la météo
-    /// </summary>
+
     public void ForceUpdateWeather()
     {
         if (levelData != null)
@@ -454,9 +417,6 @@ public class WeatherManagement : MonoBehaviour
         }
     }
 
-    #region Debug Helpers
-
-    [ContextMenu("Debug: Show Weather Status")]
     private void DebugShowWeatherStatus()
     {
         Debug.Log("=== WEATHER STATUS ===");
@@ -500,6 +460,4 @@ public class WeatherManagement : MonoBehaviour
         DeactivateRain();
         ActivateSnow(250f);
     }
-     
-    #endregion
 }

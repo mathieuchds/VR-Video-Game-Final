@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 
 public class GameStateManager : MonoBehaviour
 {
-    // Énumération des différents états du jeu
     public enum GameState
     {
         Menu,
@@ -26,26 +25,19 @@ public class GameStateManager : MonoBehaviour
     [SerializeField] private GameObject gameOverLoseCanvas;
 
     [Header("Game Objects - Ordre d'activation")]
-    [Tooltip("1. Scene Manager contenant SeasonalSpawnManager et autres systèmes de jeu")]
     [SerializeField] private GameObject sceneManager;
-    [Tooltip("2. Power Up Manager (gestion des power-ups)")]
     [SerializeField] private GameObject powerUpManager;
-    [Tooltip("3. GameObject du joueur (PlayerController) - activé en dernier")]
     [SerializeField] private GameObject player;
 
     [Header("Camera References")]
-    [Tooltip("Caméra utilisée pour le menu (fixe)")]
     [SerializeField] private Camera menuCamera;
-    [Tooltip("Caméra du joueur (utilisée en jeu)")]
     [SerializeField] private Camera playerCamera;
 
     [Header("References")]
     [SerializeField] private LevelData levelData;
 
     [Header("Player Spawn")]
-    [Tooltip("Position de spawn du joueur au démarrage de la partie")]
     [SerializeField] private Transform playerSpawnPoint;
-    [Tooltip("Position par défaut si aucun spawn point n'est défini")]
     [SerializeField] private Vector3 defaultSpawnPosition = new Vector3(0f, 1f, 0f);
 
     [Header("Debug")]
@@ -54,7 +46,6 @@ public class GameStateManager : MonoBehaviour
     [Header("Game Result")]
     private bool hasWon = false;
 
-    // Événement déclenché lors d'un changement d'état
     public event Action<GameState, GameState> OnStateChanged;
 
     private void Awake()
@@ -64,10 +55,8 @@ public class GameStateManager : MonoBehaviour
         if (levelData == null)
             levelData = FindObjectOfType<LevelData>();
 
-        // Configurer les caméras dès le départ
         ConfigureCameras();
 
-        // Désactiver tous les GameObjects gérés au démarrage
         if (sceneManager != null)
         {
             sceneManager.SetActive(false);
@@ -89,9 +78,7 @@ public class GameStateManager : MonoBehaviour
         LogDebug("[GameStateManager] === AWAKE END ===");
     }
 
-    /// <summary>
-    /// Configure les caméras pour qu'elles soient sur le même display avec les bonnes priorités
-    /// </summary>
+
     private void ConfigureCameras()
     {
         if (menuCamera != null)
@@ -109,7 +96,7 @@ public class GameStateManager : MonoBehaviour
         }
         else
         {
-            LogDebug("[GameStateManager] ⚠️ Menu Camera est NULL");
+            LogDebug("[GameStateManager] Menu Camera est NULL");
         }
 
         if (playerCamera != null)
@@ -126,25 +113,17 @@ public class GameStateManager : MonoBehaviour
         }
         else
         {
-            LogDebug("[GameStateManager] ⚠️ Player Camera est NULL");
+            LogDebug("[GameStateManager] Player Camera est NULL");
         }
     }
 
     private void Start()
     {
-        LogDebug("[GameStateManager] === START BEGIN ===");
-
-        // Initialiser le jeu en mode Menu
         SetState(GameState.Menu);
-
-        LogDebug("[GameStateManager] === START END ===");
     }
 
-    #region State Transitions
 
-    /// <summary>
-    /// Change l'état actuel du jeu et déclenche l'événement
-    /// </summary>
+
     private void SetState(GameState newState)
     {
         GameState previousState = currentState;
@@ -152,158 +131,118 @@ public class GameStateManager : MonoBehaviour
 
         LogDebug($"[GameStateManager] ===== CHANGEMENT D'ÉTAT: {previousState} → {newState} =====");
 
-        // ✅ Gérer le temps du jeu selon l'état
         UpdateTimeScale(newState);
 
-        // Déclencher l'événement de changement d'état AVANT les mises à jour
         OnStateChanged?.Invoke(previousState, newState);
 
-        // Mettre à jour les canvas
         UpdateCanvasVisibility();
 
-        // Gérer l'activation séquentielle : Scene Manager → Power Up Manager → Player
         StartCoroutine(ActivateGameObjectsSequentially());
 
-        // Gérer les caméras
         UpdateCameraState();
 
-        // Gérer le curseur selon l'état
         UpdateCursorState();
 
         LogDebug($"[GameStateManager] ===== FIN CHANGEMENT D'ÉTAT =====");
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Gère le Time.timeScale selon l'état du jeu
-    /// </summary>
     private void UpdateTimeScale(GameState newState)
     {
         switch (newState)
         {
             case GameState.Menu:
-                Time.timeScale = 1f; // Temps normal au menu
-                LogDebug("[GameStateManager] ⏰ Time.timeScale = 1 (Menu)");
+                Time.timeScale = 1f; 
+                LogDebug("[GameStateManager] Time.timeScale = 1 (Menu)");
                 break;
 
             case GameState.Game:
-                Time.timeScale = 1f; // Temps normal en jeu
-                LogDebug("[GameStateManager] ⏰ Time.timeScale = 1 (Game)");
+                Time.timeScale = 1f; 
+                LogDebug("[GameStateManager] Time.timeScale = 1 (Game)");
                 break;
 
             case GameState.GameOver:
-                Time.timeScale = 0f; // ✅ ARRÊT IMMÉDIAT DU TEMPS
-                LogDebug("[GameStateManager] ⏰ Time.timeScale = 0 (GameOver - PAUSE)");
+                Time.timeScale = 0f;
+                LogDebug("[GameStateManager] Time.timeScale = 0 (GameOver - PAUSE)");
                 break;
         }
     }
 
-    /// <summary>
-    /// Passe en mode Game Over
-    /// </summary>
-    /// <param name="playerWon">True si le joueur a gagné, False s'il a perdu</param>
     public void TriggerGameOver(bool playerWon)
     {
         LogDebug($"[GameStateManager] TriggerGameOver({playerWon}) appelé");
         
-        // ✅ MODIFIÉ : Arrêter le temps IMMÉDIATEMENT avant tout le reste
         Time.timeScale = 0f;
-        LogDebug("[GameStateManager] ⏰ TEMPS ARRÊTÉ (timeScale = 0)");
+        LogDebug("[GameStateManager] TEMPS ARRÊTÉ (timeScale = 0)");
         
         hasWon = playerWon;
         SetState(GameState.GameOver);
     }
 
-    /// <summary>
-    /// Fonction pour retourner au menu principal
-    /// Appelée depuis le Game Over
-    /// </summary>
+ 
     public void ReturnToMenu()
     {
         LogDebug("[GameStateManager] Retour au menu - Nettoyage avant reload");
         
-        // ✅ NOUVEAU : Restaurer le temps avant de recharger
         Time.timeScale = 1f;
-        LogDebug("[GameStateManager] ⏰ Temps restauré (timeScale = 1)");
+        LogDebug("[GameStateManager] Temps restauré (timeScale = 1)");
         
         CleanupBeforeSceneReload();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    /// <summary>
-    /// Fonction pour rejouer directement
-    /// Appelée depuis le Game Over
-    /// </summary>
+
     public void RestartGame()
     {
         LogDebug("[GameStateManager] Restart game - Nettoyage avant reload");
         
-        // ✅ NOUVEAU : Restaurer le temps avant de recharger
         Time.timeScale = 1f;
-        LogDebug("[GameStateManager] ⏰ Temps restauré (timeScale = 1)");
+        LogDebug("[GameStateManager] Temps restauré (timeScale = 1)");
         
         CleanupBeforeSceneReload();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Nettoie tous les composants avant le reload de scène
-    /// Désactive le joueur et ses inputs pour éviter les MissingReferenceException
-    /// </summary>
+
     private void CleanupBeforeSceneReload()
     {
-        LogDebug("[GameStateManager] 🧹 Nettoyage avant reload de scène...");
+        LogDebug("[GameStateManager] Nettoyage avant reload de scène...");
 
-        // 1. Désactiver le joueur (désabonne automatiquement les Input Actions)
         if (player != null)
         {
             player.SetActive(false);
-            LogDebug("[GameStateManager] ✓ Joueur désactivé");
+            LogDebug("[GameStateManager] Joueur désactivé");
         }
 
-        // 2. Désactiver les managers
         if (powerUpManager != null)
         {
             powerUpManager.SetActive(false);
-            LogDebug("[GameStateManager] ✓ Power Up Manager désactivé");
+            LogDebug("[GameStateManager] Power Up Manager désactivé");
         }
 
         if (sceneManager != null)
         {
             sceneManager.SetActive(false);
-            LogDebug("[GameStateManager] ✓ Scene Manager désactivé");
+            LogDebug("[GameStateManager] Scene Manager désactivé");
         }
 
-        // 3. Désactiver tous les canvas
         SetCanvasActive(menuCanvas, false);
         SetCanvasActive(gameCanvas, false);
         SetCanvasActive(powerUpCanvas, false);
         SetCanvasActive(gameOverWinCanvas, false);
         SetCanvasActive(gameOverLoseCanvas, false);
 
-        LogDebug("[GameStateManager] ✅ Nettoyage terminé");
+        LogDebug("[GameStateManager] Nettoyage terminé");
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Quitte l'application (appelé par le bouton Quit)
-    /// </summary>
     public void QuitGame()
     {
-        LogDebug("[GameStateManager] 🚪 QuitGame() appelé");
+        LogDebug("[GameStateManager] QuitGame() appelé");
 
-#if UNITY_EDITOR
-        // En mode éditeur, arrêter le Play Mode
-        UnityEditor.EditorApplication.isPlaying = false;
-        LogDebug("[GameStateManager] ✅ Play Mode arrêté (Editor)");
-#else
-        // En build, fermer l'application
+
         Application.Quit();
-        LogDebug("[GameStateManager] ✅ Application fermée");
-#endif
+        LogDebug("[GameStateManager] Application fermée");
     }
 
-    /// <summary>
-    /// Nettoie tous les ennemis de la scène
-    /// </summary>
     private void CleanupEnemies()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
@@ -316,18 +255,15 @@ public class GameStateManager : MonoBehaviour
         LogDebug($"[GameStateManager] {enemies.Length} ennemis détruits");
     }
 
-    /// <summary>
-    /// ✅ Nettoie tous les spawners et reset le système de spawn
-    /// </summary>
     private void ResetSpawners()
     {
         if (sceneManager == null)
         {
-            LogDebug("[GameStateManager] ⚠️ Scene Manager NULL, impossible de reset les spawners");
+            LogDebug("[GameStateManager] Scene Manager NULL, impossible de reset les spawners");
             return;
         }
 
-        // Trouver le SeasonalSpawnManager dans le Scene Manager
+
         SeasonalSpawnManager seasonalSpawnManager = sceneManager.GetComponentInChildren<SeasonalSpawnManager>();
         if (seasonalSpawnManager == null)
         {
@@ -336,23 +272,17 @@ public class GameStateManager : MonoBehaviour
 
         if (seasonalSpawnManager != null)
         {
-            // ✅ Un seul appel qui gère tout (saisonniers + miniboss)
             seasonalSpawnManager.ResetSpawns();
-            LogDebug("[GameStateManager] ✅ Tous les spawners réinitialisés (saisonniers + miniboss)");
+            LogDebug("[GameStateManager] Tous les spawners réinitialisés (saisonniers + miniboss)");
         }
         else
         {
-            LogDebug("[GameStateManager] ⚠️ SeasonalSpawnManager introuvable");
+            LogDebug("[GameStateManager] SeasonalSpawnManager introuvable");
         }
     }
 
-    #endregion
 
-    #region Canvas Management
 
-    /// <summary>
-    /// Met à jour la visibilité des canvas en fonction de l'état actuel
-    /// </summary>
     private void UpdateCanvasVisibility()
     {
         LogDebug($"[GameStateManager] UpdateCanvasVisibility() pour état: {currentState}");
@@ -410,9 +340,7 @@ public class GameStateManager : MonoBehaviour
         LogCanvasState(gameOverLoseCanvas, "GameOverLose");
     }
 
-    /// <summary>
-    /// Log l'état d'un canvas pour debug
-    /// </summary>
+
     private void LogCanvasState(GameObject canvasObj, string name)
     {
         if (canvasObj == null)
@@ -426,9 +354,7 @@ public class GameStateManager : MonoBehaviour
         LogDebug($"  [{name}] GameObject:{canvasObj.activeSelf}, Canvas.enabled:{canvasEnabled}");
     }
 
-    /// <summary>
-    /// Active ou désactive complètement un canvas
-    /// </summary>
+
     private void SetCanvasActive(GameObject canvasObject, bool active)
     {
         if (canvasObject == null)
@@ -453,9 +379,7 @@ public class GameStateManager : MonoBehaviour
         LogDebug($"  - Canvas '{canvasObject.name}' → GameObject.SetActive({active})");
     }
 
-    /// <summary>
-    /// Gère les caméras actives selon l'état du jeu
-    /// </summary>
+
     private void UpdateCameraState()
     {
         LogDebug($"[GameStateManager] UpdateCameraState() pour état: {currentState}");
@@ -463,7 +387,6 @@ public class GameStateManager : MonoBehaviour
         switch (currentState)
         {
             case GameState.Menu:
-                // Menu : activer UNIQUEMENT la caméra menu
                 if (menuCamera != null)
                 {
                     menuCamera.enabled = true;
@@ -477,7 +400,6 @@ public class GameStateManager : MonoBehaviour
                 break;
 
             case GameState.Game:
-                // Jeu : activer UNIQUEMENT la caméra joueur
                 if (menuCamera != null)
                 {
                     menuCamera.enabled = false;
@@ -491,7 +413,6 @@ public class GameStateManager : MonoBehaviour
                 break;
 
             case GameState.GameOver:
-                // Game Over utilise la Menu Camera
                 if (menuCamera != null)
                 {
                     menuCamera.enabled = true;
@@ -508,13 +429,10 @@ public class GameStateManager : MonoBehaviour
                 break;
         }
 
-        // IMPORTANT : Vérifier qu'une seule caméra avec AudioListener est active
         VerifyAudioListeners();
     }
 
-    /// <summary>
-    /// S'assure qu'un seul AudioListener est actif à la fois
-    /// </summary>
+
     private void VerifyAudioListeners()
     {
         AudioListener menuListener = menuCamera?.GetComponent<AudioListener>();
@@ -536,26 +454,16 @@ public class GameStateManager : MonoBehaviour
         }
     }
 
-    #endregion
 
-    #region Cursor Management
-
-    /// <summary>
-    /// Gère l'état du curseur selon le mode de jeu
-    /// - Affiche le prefab de curseur UI (CursorPrefabManager) en Menu et GameOver.
-    /// - Masque le prefab et verrouille le curseur en Game.
-    /// </summary>
     private void UpdateCursorState()
     {
         switch (currentState)
         {
             case GameState.Menu:
-                // Menu : curseur visible et déverrouillé
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
-                LogDebug("[GameStateManager] 🖱️ Curseur DÉVERROUILLÉ (Menu)");
+                LogDebug("[GameStateManager] Curseur DÉVERROUILLÉ (Menu)");
 
-                // show prefab cursor attached to menu canvas if available
                 if (CursorPrefabManager.Instance != null)
                 {
                     Canvas menuC = menuCanvas != null ? menuCanvas.GetComponent<Canvas>() : null;
@@ -566,12 +474,10 @@ public class GameStateManager : MonoBehaviour
                 break;
 
             case GameState.Game:
-                // Jeu : curseur verrouillé et invisible (FPS)
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
-                LogDebug("[GameStateManager] 🖱️ Curseur VERROUILLÉ (Game)");
+                LogDebug("[GameStateManager] Curseur VERROUILLÉ (Game)");
 
-                // hide prefab cursor
                 if (CursorPrefabManager.Instance != null)
                 {
                     CursorPrefabManager.Instance.Hide();
@@ -579,12 +485,10 @@ public class GameStateManager : MonoBehaviour
                 break;
 
             case GameState.GameOver:
-                // Game Over : curseur visible et déverrouillé (pour cliquer sur les boutons)
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
-                LogDebug("[GameStateManager] 🖱️ Curseur DÉVERROUILLÉ (GameOver)");
+                LogDebug("[GameStateManager] Curseur DÉVERROUILLÉ (GameOver)");
 
-                // show prefab cursor attached to the active gameover canvas
                 if (CursorPrefabManager.Instance != null)
                 {
                     GameObject goCanvasObj = hasWon ? gameOverWinCanvas : gameOverLoseCanvas;
@@ -597,29 +501,21 @@ public class GameStateManager : MonoBehaviour
         }
     }
 
-    #endregion
 
-    #region Getters
 
-    /// <summary>
-    /// Retourne l'état actuel du jeu
-    /// </summary>
+ 
     public GameState GetCurrentState()
     {
         return currentState;
     }
 
-    /// <summary>
-    /// Vérifie si le joueur est en mode jeu
-    /// </summary>
+
     public bool IsPlaying()
     {
         return currentState == GameState.Game;
     }
 
-    #endregion
 
-    #region Debug Helpers
 
     private void LogDebug(string message)
     {
@@ -669,32 +565,25 @@ public class GameStateManager : MonoBehaviour
         DebugShowCanvasState();
     }
 
-    #endregion
 
-    #region Player Reset
 
-    /// <summary>
-    /// ✅ Réinitialise le joueur (santé + position au spawn point)
-    /// ATTENTION : Doit être appelé APRÈS que le joueur soit activé !
-    /// </summary>
     private void ResetPlayer()
     {
         if (player == null)
         {
-            LogDebug("[GameStateManager] ⚠️ Player est NULL, impossible de réinitialiser");
+            LogDebug("[GameStateManager] Player est NULL, impossible de réinitialiser");
             return;
         }
 
-        // 1. Réinitialiser les stats de santé
         PlayerStats playerStats = player.GetComponent<PlayerStats>();
         if (playerStats != null)
         {
             playerStats.ResetStats();
-            LogDebug("[GameStateManager] ✅ PlayerStats réinitialisés");
+            LogDebug("[GameStateManager] PlayerStats réinitialisés");
         }
         else
         {
-            LogDebug("[GameStateManager] ⚠️ PlayerStats non trouvé sur le joueur");
+            LogDebug("[GameStateManager] PlayerStats non trouvé sur le joueur");
         }
 
         // 2. Replacer le joueur au point de spawn
@@ -704,50 +593,41 @@ public class GameStateManager : MonoBehaviour
         if (playerController != null)
         {
             playerController.Respawn(spawnPosition);
-            LogDebug($"[GameStateManager] ✅ Joueur replacé au spawn : {spawnPosition}");
+            LogDebug($"[GameStateManager] Joueur replacé au spawn : {spawnPosition}");
         }
         else
         {
-            // Fallback si pas de PlayerController
             CharacterController controller = player.GetComponent<CharacterController>();
             if (controller != null)
             {
                 controller.enabled = false;
                 player.transform.position = spawnPosition;
                 controller.enabled = true;
-                LogDebug($"[GameStateManager] ✅ Joueur replacé au spawn (via CharacterController) : {spawnPosition}");
+                LogDebug($"[GameStateManager] Joueur replacé au spawn (via CharacterController) : {spawnPosition}");
             }
             else
             {
                 player.transform.position = spawnPosition;
-                LogDebug($"[GameStateManager] ✅ Joueur replacé au spawn (via Transform) : {spawnPosition}");
+                LogDebug($"[GameStateManager] Joueur replacé au spawn (via Transform) : {spawnPosition}");
             }
         }
     }
 
-    /// <summary>
-    /// Retourne la position de spawn (Transform ou valeur par défaut)
-    /// </summary>
     private Vector3 GetSpawnPosition()
     {
         if (playerSpawnPoint != null)
         {
-            LogDebug($"[GameStateManager] 📍 Utilisation du spawn point : {playerSpawnPoint.name}");
+            LogDebug($"[GameStateManager] Utilisation du spawn point : {playerSpawnPoint.name}");
             return playerSpawnPoint.position;
         }
         else
         {
-            LogDebug($"[GameStateManager] 📍 Utilisation de la position par défaut : {defaultSpawnPosition}");
+            LogDebug($"[GameStateManager] Utilisation de la position par défaut : {defaultSpawnPosition}");
             return defaultSpawnPosition;
         }
     }
 
-    #endregion
 
-    /// <summary>
-    /// ✅ NOUVEAU : Active/désactive le mode transition de vague
-    /// Masque le canvas du joueur pendant la transition
-    /// </summary>
     public void SetWaveTransitionMode(bool isInTransition)
     {
         if (enableDebugLogs)
@@ -755,7 +635,6 @@ public class GameStateManager : MonoBehaviour
 
         if (isInTransition)
         {
-            // ✅ Masquer complètement le canvas de jeu pendant la transition
             SetCanvasActive(gameCanvas, false);
             
             if (enableDebugLogs)
@@ -763,7 +642,6 @@ public class GameStateManager : MonoBehaviour
         }
         else
         {
-            // ✅ Réafficher le canvas de jeu après la transition
             if (currentState == GameState.Game)
             {
                 SetCanvasActive(gameCanvas, true);
@@ -774,9 +652,7 @@ public class GameStateManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// ✅ Active les GameObjects dans l'ordre : Scene Manager → Power Up Manager → Player
-    /// </summary>
+
     private IEnumerator ActivateGameObjectsSequentially()
     {
         bool shouldActivate = currentState == GameState.Game;
@@ -785,30 +661,26 @@ public class GameStateManager : MonoBehaviour
         {
             LogDebug("[GameStateManager] Activation séquentielle des GameObjects...");
 
-            // 1. Activer le Scene Manager (gestion des spawns)
             if (sceneManager != null)
             {
                 sceneManager.SetActive(true);
                 LogDebug($"[GameStateManager] ✓ Scene Manager activé: {sceneManager.name}");
-                yield return null; // Attendre une frame
+                yield return null; 
             }
 
-            // 2. Activer le Power Up Manager
             if (powerUpManager != null)
             {
                 powerUpManager.SetActive(true);
                 LogDebug($"[GameStateManager] ✓ Power Up Manager activé: {powerUpManager.name}");
-                yield return null; // Attendre une frame
+                yield return null; 
             }
 
-            // 3. Activer le joueur en dernier
             if (player != null)
             {
                 player.SetActive(true);
                 LogDebug($"[GameStateManager] ✓ Joueur activé: {player.name}");
                 
-                // Reset APRÈS activation (pour que Start() soit appelé)
-                yield return null; // Attendre que Start() du joueur soit exécuté
+                yield return null; 
                 ResetPlayer();
             }
 
@@ -827,22 +699,16 @@ public class GameStateManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Fonction appelée par le bouton Play du menu
-    /// Passe en mode Game
-    /// </summary>
+
     public void StartGame()
     {
         LogDebug("[GameStateManager] StartGame() appelé");
 
-        // 1. Réinitialiser le niveau AVANT de reset les spawners
         if (levelData != null)
             levelData.level = 1;
 
-        // 2. Détruire tous les ennemis restants
         CleanupEnemies();
 
-        // 3. Changer d'état (active le Scene Manager)
         SetState(GameState.Game);
     }
 }

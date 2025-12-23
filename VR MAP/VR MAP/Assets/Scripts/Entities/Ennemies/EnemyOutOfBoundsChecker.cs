@@ -1,10 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-/// <summary>
-/// Vérifie si un ennemi est hors limites (sous la map ou trop haut pour certains types)
-/// et le supprime après un délai, comptant comme un kill
-/// </summary>
+
 public class EnemyOutOfBoundsChecker : MonoBehaviour
 {
     [Header("Out of Bounds Settings")]
@@ -19,7 +16,7 @@ public class EnemyOutOfBoundsChecker : MonoBehaviour
 
     [Header("Enemy Type Detection")]
     [Tooltip("Noms des types d'ennemis concernés par les limites haute ET basse")]
-    [SerializeField] private string[] flyingEnemyNames = { "Wizard", "wizard", "Ice Wizard", "ice wizard", "IceWizard", "icewizard", "Bear", "bear" }; // ✅ MODIFIÉ
+    [SerializeField] private string[] flyingEnemyNames = { "Wizard", "wizard", "Ice Wizard", "ice wizard", "IceWizard", "icewizard", "Bear", "bear" }; 
 
     [Header("Debug")]
     [SerializeField] private bool debugMode = false;
@@ -35,12 +32,10 @@ public class EnemyOutOfBoundsChecker : MonoBehaviour
 
         if (enemyComponent == null)
         {
-            Debug.LogError($"[EnemyOutOfBoundsChecker] Pas de composant Enemy trouvé sur {gameObject.name} !");
             enabled = false;
             return;
         }
 
-        // Déterminer si c'est un type d'ennemi volant
         isFlyingType = IsEnemyFlyingType();
 
         if (debugMode)
@@ -54,10 +49,8 @@ public class EnemyOutOfBoundsChecker : MonoBehaviour
         float currentY = transform.position.y;
         bool wasOutOfBounds = isOutOfBounds;
 
-        // ✅ MODIFIÉ : Vérifier les limites selon le type d'ennemi
         if (isFlyingType)
         {
-            // Pour Wizard, Ice Wizard et Bear : vérifier les limites haute ET basse
             if (currentY < minY)
             {
                 isOutOfBounds = true;
@@ -77,7 +70,6 @@ public class EnemyOutOfBoundsChecker : MonoBehaviour
         }
         else
         {
-            // Pour les autres ennemis : vérifier SEULEMENT la limite basse
             if (currentY < minY)
             {
                 isOutOfBounds = true;
@@ -90,15 +82,12 @@ public class EnemyOutOfBoundsChecker : MonoBehaviour
             }
         }
 
-        // Gérer la coroutine
         if (isOutOfBounds && outOfBoundsCoroutine == null)
         {
-            // Démarrer le compte à rebours
             outOfBoundsCoroutine = StartCoroutine(RemoveAfterDelay());
         }
         else if (!isOutOfBounds && outOfBoundsCoroutine != null)
         {
-            // L'ennemi est revenu dans les limites, annuler le compte à rebours
             StopCoroutine(outOfBoundsCoroutine);
             outOfBoundsCoroutine = null;
 
@@ -107,9 +96,7 @@ public class EnemyOutOfBoundsChecker : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Vérifie si l'ennemi est d'un type volant (wizard, ice wizard, ours)
-    /// </summary>
+
     private bool IsEnemyFlyingType()
     {
         string objName = gameObject.name.ToLower();
@@ -127,48 +114,38 @@ public class EnemyOutOfBoundsChecker : MonoBehaviour
         return false;
     }
 
-    /// <summary>
-    /// Coroutine qui attend le délai puis supprime l'ennemi
-    /// </summary>
     private IEnumerator RemoveAfterDelay()
     {
         if (debugMode)
-            Debug.Log($"[EnemyOutOfBoundsChecker] ⏱️ Démarrage du compte à rebours ({timeBeforeRemoval}s) pour {gameObject.name}");
+            Debug.Log($"[EnemyOutOfBoundsChecker] Démarrage du compte à rebours ({timeBeforeRemoval}s) pour {gameObject.name}");
 
         yield return new WaitForSeconds(timeBeforeRemoval);
 
         if (debugMode)
-            Debug.Log($"[EnemyOutOfBoundsChecker] ⚠️ Suppression de {gameObject.name} (hors limites depuis {timeBeforeRemoval}s)");
+            Debug.Log($"[EnemyOutOfBoundsChecker] Suppression de {gameObject.name} (hors limites depuis {timeBeforeRemoval}s)");
 
-        // Compter comme un kill pour le joueur
         CountAsKill();
 
-        // Notifier le spawner si présent
         if (enemyComponent.spawner != null)
         {
             enemyComponent.spawner.EnemyDied();
         }
 
-        // Détruire l'ennemi
         Destroy(gameObject);
     }
 
-    /// <summary>
-    /// Compte l'ennemi comme tué (pour les quêtes et le score)
-    /// </summary>
+
     private void CountAsKill()
     {
-        // Ajouter au compteur de quête
         QuestManager questManager = QuestManager.Instance;
         if (questManager != null)
         {
             questManager.AddProgress(QuestObjectiveType.KillEnemy, 1);
 
             if (debugMode)
-                Debug.Log($"[EnemyOutOfBoundsChecker] ✅ +1 kill ajouté pour {gameObject.name}");
+                Debug.Log($"[EnemyOutOfBoundsChecker] +1 kill ajouté pour {gameObject.name}");
         }
 
-        // Ajouter du score
         PlayerStats playerStats = FindObjectOfType<PlayerStats>();
         if (playerStats != null)
         {
@@ -179,13 +156,12 @@ public class EnemyOutOfBoundsChecker : MonoBehaviour
             playerStats.AddScore(scoreToAdd);
 
             if (debugMode)
-                Debug.Log($"[EnemyOutOfBoundsChecker] ✅ +{scoreToAdd} score ajouté");
+                Debug.Log($"[EnemyOutOfBoundsChecker]  +{scoreToAdd} score ajouté");
         }
     }
 
     private void OnDestroy()
     {
-        // Nettoyer la coroutine si l'objet est détruit
         if (outOfBoundsCoroutine != null)
         {
             StopCoroutine(outOfBoundsCoroutine);
@@ -193,24 +169,17 @@ public class EnemyOutOfBoundsChecker : MonoBehaviour
         }
     }
 
-    #region Debug Helpers
-
-    /// <summary>
-    /// Affiche les gizmos en mode debug
-    /// </summary>
     private void OnDrawGizmos()
     {
         if (!debugMode) return;
 
         Vector3 pos = transform.position;
 
-        // Ligne rouge pour la limite basse
         Gizmos.color = Color.red;
         Vector3 minYPos = new Vector3(pos.x, minY, pos.z);
         Gizmos.DrawLine(pos, minYPos);
         Gizmos.DrawWireSphere(minYPos, 0.5f);
 
-        // Ligne jaune pour la limite haute (si type volant)
         if (isFlyingType)
         {
             Gizmos.color = Color.yellow;
@@ -220,7 +189,6 @@ public class EnemyOutOfBoundsChecker : MonoBehaviour
         }
     }
 
-    [ContextMenu("Debug: Show Current Status")]
     private void DebugShowStatus()
     {
         Debug.Log($"=== STATUS {gameObject.name} ===");
@@ -232,13 +200,11 @@ public class EnemyOutOfBoundsChecker : MonoBehaviour
         Debug.Log($"Coroutine Active: {outOfBoundsCoroutine != null}");
     }
 
-    [ContextMenu("Debug: Force Remove")]
     private void DebugForceRemove()
     {
-        Debug.Log($"[EnemyOutOfBoundsChecker] 🚨 Force Remove appelé sur {gameObject.name}");
+        Debug.Log($"[EnemyOutOfBoundsChecker] Force Remove appelé sur {gameObject.name}");
         CountAsKill();
         Destroy(gameObject);
     }
 
-    #endregion
 }

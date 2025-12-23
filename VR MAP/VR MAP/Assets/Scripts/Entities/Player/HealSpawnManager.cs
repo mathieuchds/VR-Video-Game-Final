@@ -5,7 +5,7 @@ public class HealSpawnManager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private LevelData levelData;
-    [SerializeField] private GameObject healPrefab; // Prefab du point de heal
+    [SerializeField] private GameObject healPrefab; 
 
     [Header("Spawn Positions")]
     [Tooltip("Positions possibles pour spawner les heals")]
@@ -53,7 +53,6 @@ public class HealSpawnManager : MonoBehaviour
     {
         if (levelData == null) return;
 
-        // Détecter changement de vague
         if (levelData.level != lastWave)
         {
             lastWave = levelData.level;
@@ -61,21 +60,15 @@ public class HealSpawnManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Spawne les heals en fonction de la vague actuelle
-    /// </summary>
     private void SpawnHealsForWave(int wave)
     {
-        // Détruire tous les heals actifs
         ClearActiveHeals();
 
-        // Calculer le nombre de heals à spawner
         int healCount = GetHealCountForWave(wave);
 
         if (debugMode)
             Debug.Log($"[HealSpawnManager] Vague {wave} : Spawn de {healCount} heal(s)");
 
-        // Vérifier qu'on a assez de positions
         if (possiblePositions.Length == 0)
         {
             Debug.LogWarning($"[HealSpawnManager] Impossible de spawner {healCount} heals : aucune position disponible");
@@ -88,32 +81,27 @@ public class HealSpawnManager : MonoBehaviour
             healCount = possiblePositions.Length;
         }
 
-        // Choisir des positions aléatoires sans répétition
         List<int> availableIndices = new List<int>();
         for (int i = 0; i < possiblePositions.Length; i++)
         {
             availableIndices.Add(i);
         }
 
-        // Spawner les heals
         for (int i = 0; i < healCount; i++)
         {
-            // Choisir une position aléatoire parmi celles disponibles
             int randomIndex = Random.Range(0, availableIndices.Count);
             int positionIndex = availableIndices[randomIndex];
             availableIndices.RemoveAt(randomIndex);
 
             Transform spawnPosition = possiblePositions[positionIndex];
 
-            // Instancier le heal
             GameObject healInstance = Instantiate(healPrefab, spawnPosition.position, Quaternion.identity, transform);
             healInstance.name = $"Heal_{wave}_{i + 1}";
 
-            // Activer le heal
             Heal healScript = healInstance.GetComponent<Heal>();
             if (healScript != null)
             {
-                healScript.ActivateDirectly(); // Nouvelle méthode à ajouter dans Heal.cs
+                healScript.ActivateDirectly(); 
             }
 
             activeHeals.Add(healInstance);
@@ -123,9 +111,7 @@ public class HealSpawnManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Retourne le nombre de heals à spawner selon la vague
-    /// </summary>
+
     private int GetHealCountForWave(int wave)
     {
         if (wave >= 1 && wave <= 3)
@@ -137,12 +123,10 @@ public class HealSpawnManager : MonoBehaviour
         else if (wave >= 10)
             return healsForWave10Plus;
 
-        return 1; // Fallback
+        return 1; 
     }
 
-    /// <summary>
-    /// Détruit tous les heals actifs
-    /// </summary>
+
     private void ClearActiveHeals()
     {
         foreach (var heal in activeHeals)
@@ -157,9 +141,7 @@ public class HealSpawnManager : MonoBehaviour
             Debug.Log("[HealSpawnManager] Tous les heals actifs ont été détruits");
     }
 
-    /// <summary>
-    /// Appelé quand un heal est ramassé (pour le retirer de la liste)
-    /// </summary>
+
     public void OnHealCollected(GameObject heal)
     {
         activeHeals.Remove(heal);
@@ -173,9 +155,7 @@ public class HealSpawnManager : MonoBehaviour
         ClearActiveHeals();
     }
 
-    #region Debug Helpers
 
-    [ContextMenu("Debug: Show Current Heals")]
     private void DebugShowCurrentHeals()
     {
         Debug.Log($"[HealSpawnManager] === STATUS ===");
@@ -184,7 +164,6 @@ public class HealSpawnManager : MonoBehaviour
         Debug.Log($"Positions disponibles: {possiblePositions.Length}");
     }
 
-    [ContextMenu("Debug: Force Respawn Heals")]
     private void DebugForceRespawn()
     {
         if (levelData != null)
@@ -193,5 +172,4 @@ public class HealSpawnManager : MonoBehaviour
         }
     }
 
-    #endregion
 }

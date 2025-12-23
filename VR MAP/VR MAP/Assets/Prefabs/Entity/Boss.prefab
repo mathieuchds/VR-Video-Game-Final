@@ -17,7 +17,6 @@ GameObject:
   - component: {fileID: 742630723322922028}
   - component: {fileID: 2752826438571980995}
   - component: {fileID: 5791724933345029385}
-  - component: {fileID: 1829137001629944995}
   m_Layer: 0
   m_Name: Boss
   m_TagString: Boss
@@ -306,15 +305,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boss
   healthBar: {fileID: 1880656171001299068}
-  maxHealth: 1000
+  maxHealth: 10000
   health: 0
   contactDamage: 20
   speed: 3
   flashTime: 0.1
   isStunned: 0
+  isSlowed: 0
   rb: {fileID: 0}
   spawner: {fileID: 0}
-  flameEffectPrefab: {fileID: 197962, guid: c1f1c6a173fc5a34aae675702b69445a, type: 3}
+  flameEffectPrefab: {fileID: 1053144852451064, guid: 616b8784f30afc54fbf798e164ae5541, type: 3}
+  flameScale: 1.5
+  poisonEffectPrefab: {fileID: 1178894326743412, guid: e00df870531e4e041a735f760d213552, type: 3}
+  poisonScale: 1.5
+  slowEffectPrefab: {fileID: 1610329445802310, guid: 8553577d8c8821f43a74b2d0921845fd, type: 3}
+  slowScale: 1.7
   laserSourceLeft: {fileID: 3496446809812194874}
   laserSourceRight: {fileID: 1154304754287481148}
   chaseSpeed: 3.5
@@ -323,10 +328,10 @@ MonoBehaviour:
   dashDuration: 2
   dashDelay: 0.5
   stopDistance: 0.2
-  bulletPrefab: {fileID: 5593570829413369036, guid: 3dc26d80a4c624a41b78f60461955c63, type: 3}
+  bulletPrefab: {fileID: 8747757470087523455, guid: 9690126558f4862478df85ea898bc332, type: 3}
   shootForce: 10
-  bulletsPerBurst: 10
-  shootCooldown: 2
+  bulletsPerBurst: 5
+  shootCooldown: 15
   laserDistance: 30
   laserDamage: 7
   sweepSpeed: 5
@@ -336,103 +341,8 @@ MonoBehaviour:
   warningColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   activeColor: {r: 1, g: 0, b: 0, a: 1}
   sweepingDelay: 1
---- !u!82 &1829137001629944995
-AudioSource:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 937288432677411039}
-  m_Enabled: 1
-  serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: f844c9c4f9ae16949856810e74a1dd56, type: 3}
-  m_PlayOnAwake: 1
-  m_Volume: 1
-  m_Pitch: 1
-  Loop: 1
-  Mute: 0
-  Spatialize: 0
-  SpatializePostEffects: 0
-  Priority: 128
-  DopplerLevel: 1
-  MinDistance: 0
-  MaxDistance: 150
-  Pan2D: 0
-  rolloffMode: 0
-  BypassEffects: 0
-  BypassListenerEffects: 0
-  BypassReverbZones: 0
-  rolloffCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  panLevelCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  spreadCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  reverbZoneMixCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  contactDamage: 20
+  contactDamageCooldown: 1
 --- !u!1 &2553651848931250955
 GameObject:
   m_ObjectHideFlags: 0

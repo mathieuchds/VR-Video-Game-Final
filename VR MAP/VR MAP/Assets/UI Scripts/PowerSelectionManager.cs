@@ -13,7 +13,7 @@ public class PowerSelectionManager : MonoBehaviour
     public PlayerController player;
 
     private bool canSelect = false;
-    private bool isSelectionActive = false; // ✅ NOUVEAU : Flag pour indiquer si la sélection est active
+    private bool isSelectionActive = false; 
 
     private List<string> allPowerUps = new List<string>()
     {
@@ -46,8 +46,8 @@ public class PowerSelectionManager : MonoBehaviour
 
     public void ShowPowerSelection()
     {
-        isSelectionActive = true; // ✅ NOUVEAU
-        Time.timeScale = 0f; // pause
+        isSelectionActive = true; 
+        Time.timeScale = 0f; 
         panel.SetActive(true);
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
@@ -83,12 +83,10 @@ public class PowerSelectionManager : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         canSelect = false;
-        isSelectionActive = false; // ✅ NOUVEAU : Indiquer que la sélection est terminée
+        isSelectionActive = false; 
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Méthode publique pour vérifier si la sélection est active
-    /// </summary>
+
     public bool IsSelectionActive()
     {
         return isSelectionActive;

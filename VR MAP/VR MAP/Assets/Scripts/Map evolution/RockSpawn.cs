@@ -34,19 +34,6 @@ public class RockSpawn : MonoBehaviour
 
     private void Start()
     {
-        if (rocksParent == null)
-        {
-            Debug.LogWarning("[RockSpawn] Aucun objet parent assigné. Assignez 'rocksParent' dans l'inspecteur.");
-            return;
-        }
-
-        levelData = FindObjectOfType<LevelData>();
-        if (levelData == null)
-        {
-            Debug.LogWarning("[RockSpawn] LevelData introuvable dans la scène. Remplacement des rochers ignoré.");
-            return;
-        }
-
         lastLevel = levelData.level;
         ReplaceRocksByLevel(lastLevel);
     }
@@ -63,7 +50,6 @@ public class RockSpawn : MonoBehaviour
         {
             lastLevel = levelData.level;
             ReplaceRocksByLevel(lastLevel);
-            Debug.Log($"[RockSpawn] Niveau changé -> {lastLevel}, rochers mis à jour.");
         }
     }
 
@@ -71,7 +57,6 @@ public class RockSpawn : MonoBehaviour
     {
         if (rocksParent == null)
         {
-            Debug.LogWarning("[RockSpawn] rocksParent est null, impossible de remplacer les rochers.");
             return;
         }
 
@@ -88,11 +73,9 @@ public class RockSpawn : MonoBehaviour
 
         if (childrenToReplace.Count == 0)
         {
-            Debug.Log($"[RockSpawn] Aucun enfant trouvé dans '{rocksParent.name}'.");
             return;
         }
 
-        Debug.Log($"[RockSpawn] Remplacement de {childrenToReplace.Count} rochers dans '{rocksParent.name}' pour le niveau {level}.");
 
         foreach (var child in childrenToReplace)
         {
@@ -106,7 +89,6 @@ public class RockSpawn : MonoBehaviour
 
             if (replacementPrefab == null)
             {
-                Debug.LogWarning($"[RockSpawn] Aucun prefab disponible pour la catégorie {desiredCategory} au niveau {level}.");
                 continue;
             }
 
@@ -197,7 +179,6 @@ public class RockSpawn : MonoBehaviour
                 }
             }
 
-            // Appliquer les décalages supplémentaires
             if (additionalDownOffset > 0f)
             {
                 newObj.transform.position += Vector3.down * additionalDownOffset;
@@ -213,11 +194,9 @@ public class RockSpawn : MonoBehaviour
                 Debug.LogWarning($"[RockSpawn] Aucun sol détecté sous '{replacementPrefab.name}'. Assigne 'groundRoot' ou règle 'groundMask'.");
             }
 
-            // Marquer comme spawned
             var marker = newObj.AddComponent<SpawnedRock>();
             marker.category = desiredCategory;
 
-            // Détruire l'ancien enfant
             Destroy(child.gameObject);
         }
     }

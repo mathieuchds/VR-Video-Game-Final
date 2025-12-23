@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections; // ✅ AJOUTÉ : Nécessaire pour IEnumerator
+using System.Collections; 
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -39,10 +39,8 @@ public class SeasonalSpawnManager : MonoBehaviour
     [Tooltip("Active logs détaillés pour diagnostiquer les spawns.")]
     [SerializeField] private bool debugMode = false;
 
-    // clé PlayerPrefs par scène
     private string prefsKey => $"SeasonalSpawn_Activated_{SceneManager.GetActiveScene().name}";
 
-    // saved entries format: prefix|hierPath|x,y,z|prefabName
     private HashSet<string> activatedKeys = new HashSet<string>(StringComparer.Ordinal);
 
     private LevelData levelData;
@@ -52,7 +50,6 @@ public class SeasonalSpawnManager : MonoBehaviour
     {
         LoadActivatedKeys();
 
-        // rendre invisibles tous les marqueurs présents (ne pas les détruire)
         var allTransforms = UnityEngine.Object.FindObjectsOfType<Transform>();
         foreach (var t in allTransforms)
         {
@@ -63,10 +60,8 @@ public class SeasonalSpawnManager : MonoBehaviour
             }
         }
 
-        // restaurer les spawns déjà activés (persistés)
         RestoreActivatedMarkers();
 
-        // Debug: lister les marqueurs présents dans la scène
         DebugListMarkers();
     }
 
@@ -102,7 +97,6 @@ public class SeasonalSpawnManager : MonoBehaviour
 
         var allTransforms = UnityEngine.Object.FindObjectsOfType<Transform>();
 
-        // collect markers: either by tag (configurable) or by name contains
         List<Transform> halloweenMarkers;
         List<Transform> winterMarkers;
 
@@ -152,7 +146,7 @@ public class SeasonalSpawnManager : MonoBehaviour
 
         targetWinter = Mathf.Min(targetWinter, totalWinter);
 
-        if (debugMode) Debug.Log($"[SeasonalSpawnManager] Targets - Halloween:{targetHalloween}, Winter:{targetWinter} (level {level})");
+        if (debugMode) Debug.Log($"[SeasonalSpawnManager] Targets  Halloween:{targetHalloween}, Winter:{targetWinter} (level {level})");
 
         var spawned = UnityEngine.Object.FindObjectsOfType<SpawnedSeasonal>();
         int currentHalloween = spawned.Count(s => s != null && s.activated && s.category == SpawnedSeasonal.Category.Halloween);
@@ -182,8 +176,7 @@ public class SeasonalSpawnManager : MonoBehaviour
         SaveActivatedKeys();
     }
 
-    // activation : replace marker by instantiated object (inspired by RockSpawn)
-    // -> instancie le visuel + un spawner invisible (selon saison) contenant SpawnerContent initialisé
+
     private void ActivateRandomMarkers(List<Transform> candidates, int numberToActivate, List<GameObject> prefabPool, string categoryPrefix)
     {
         if (numberToActivate <= 0) return;
@@ -206,7 +199,6 @@ public class SeasonalSpawnManager : MonoBehaviour
             var prefab = prefabPool[UnityEngine.Random.Range(0, prefabPool.Count)];
             if (prefab == null) continue;
 
-            // skip if marker already converted (we check nearby spawned objects)
             var existingMarkerComp = t.GetComponent<SpawnedSeasonal>();
             if (existingMarkerComp != null && existingMarkerComp.activated) continue;
 
@@ -214,7 +206,6 @@ public class SeasonalSpawnManager : MonoBehaviour
 
             Vector3 spawnPos = t.position + Vector3.up * 1f;
 
-            // compute rotation: try to align to ground normal + apply random yaw
             Quaternion finalRot;
             if (TryGetGroundHitUnderPosition(t.position, out RaycastHit groundHit))
             {
@@ -224,22 +215,18 @@ public class SeasonalSpawnManager : MonoBehaviour
             }
             else
             {
-                // fallback: keep marker yaw but add random yaw
                 Quaternion yaw = Quaternion.Euler(0f, t.rotation.eulerAngles.y, 0f);
                 Quaternion randomYaw = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
                 finalRot = yaw * randomYaw * prefab.transform.rotation;
             }
 
-            // instantiate visible prefab at marker's parent (we will remove the marker like RockSpawn)
             var newObj = Instantiate(prefab, spawnPos, finalRot, t.parent);
             newObj.transform.localScale = prefab.transform.localScale;
             newObj.name = $"seasonal.{categoryPrefix}.{prefab.name}";
 
-            // Ensure active and visuals enabled
             if (!newObj.activeSelf) newObj.SetActive(true);
             ShowObjectVisuals(newObj);
 
-            // snap bottom of prefab to real ground under marker
             if (TryGetGroundYUnderPosition(t.position, out float groundY))
             {
                 float lowestWorldY = GetLowestWorldY(newObj);
@@ -274,9 +261,7 @@ public class SeasonalSpawnManager : MonoBehaviour
             }
 
             ShowObjectVisuals(newObj);
-             
-            // --- Instantiate the invisible spawner prefab (child of visible) ---
-            // Le spawner prefab contient déjà SpawnerContent avec mobPrefabs[] configurés dans l'inspector
+
             GameObject spawnerPrefab = categoryPrefix == "H" ? spawnerPrefabHalloween : spawnerPrefabWinter;
             if (spawnerPrefab != null)
             {
@@ -287,11 +272,8 @@ public class SeasonalSpawnManager : MonoBehaviour
                     spawnerInstance.transform.localPosition = Vector3.zero;
                     spawnerInstance.transform.localRotation = Quaternion.identity;
 
-                    // ensure invisible visuals only (renderers/colliders disabled)
                     HideMarkerVisuals(spawnerInstance);
 
-                    // Le SpawnerContent est déjà sur le prefab avec ses mobPrefabs[] configurés
-                    // -> PAS besoin d'appeler Initialize() — on vérifie juste qu'il est présent
                     var spComp = spawnerInstance.GetComponent<SpawnerContent>();
                     if (spComp == null)
                     {
@@ -312,17 +294,14 @@ public class SeasonalSpawnManager : MonoBehaviour
                 if (debugMode) Debug.Log($"[SeasonalSpawnManager] Aucun spawnerPrefab défini pour la saison {categoryPrefix}.");
             }
 
-            // add marker component on the new object (same approach as RockSpawn)
             var spawnedComp = newObj.AddComponent<SpawnedSeasonal>();
             spawnedComp.activated = true;
             spawnedComp.prefabName = prefab.name;
             spawnedComp.category = categoryPrefix == "H" ? SpawnedSeasonal.Category.Halloween : SpawnedSeasonal.Category.Winter;
 
-            // persist key using the new object's hierarchy path (so Restore can find it later)
             string key = MakeSavedKey(categoryPrefix, newObj.transform, prefab.name);
             activatedKeys.Add(key);
 
-            // destroy the original marker cube
             UnityEngine.Object.Destroy(t.gameObject);
         }
     }
@@ -344,7 +323,6 @@ public class SeasonalSpawnManager : MonoBehaviour
         return result;
     }
 
-    // create saved key including prefab name
     private string MakeSavedKey(string prefix, Transform t, string prefabName)
     {
         string path = GetHierarchyPath(t);
@@ -352,7 +330,6 @@ public class SeasonalSpawnManager : MonoBehaviour
         return $"{prefix}|{path}|{p.x:F3},{p.y:F3},{p.z:F3}|{prefabName}";
     }
 
-    // quick prefix-only key for lookup before deciding prefab (used to check if marker already activated)
     private string MakeSavedKeyPrefix(string prefix, Transform t)
     {
         string path = GetHierarchyPath(t);
@@ -385,7 +362,6 @@ public class SeasonalSpawnManager : MonoBehaviour
         foreach (var s in arr) activatedKeys.Add(s);
     }
 
-    // Hide renderer/collider of marker so it's not visible in scene (but keep GameObject alive)
     private void HideMarkerVisuals(GameObject go)
     {
         if (go == null) return;
@@ -393,7 +369,6 @@ public class SeasonalSpawnManager : MonoBehaviour
         foreach (var c in go.GetComponentsInChildren<Collider>()) c.enabled = false;
     }
 
-    // Ensure instantiated object visuals are enabled
     private void ShowObjectVisuals(GameObject go)
     {
         if (go == null) return;
@@ -407,7 +382,6 @@ public class SeasonalSpawnManager : MonoBehaviour
         if (t == null) return false;
         if (useMarkerTag)
         {
-            // handled ailleurs; garder le fallback
             return false;
         }
         return t.name.IndexOf(markerNameLower, StringComparison.OrdinalIgnoreCase) >= 0;
@@ -470,7 +444,6 @@ public class SeasonalSpawnManager : MonoBehaviour
         return false;
     }
 
-    // nouvelle méthode : obtient RaycastHit (point + normale) sous une position, priorité groundRoot -> groundMask -> Terrain
     private bool TryGetGroundHitUnderPosition(Vector3 position, out RaycastHit hit)
     {
         hit = default;
@@ -510,7 +483,6 @@ public class SeasonalSpawnManager : MonoBehaviour
         return false;
     }
 
-    // restore activated markers from PlayerPrefs: instantiate saved prefab as child of marker
     private void RestoreActivatedMarkers()
     {
         if (activatedKeys.Count == 0) return;
@@ -523,7 +495,6 @@ public class SeasonalSpawnManager : MonoBehaviour
         {
             try
             {
-                // parse saved key: prefix|path|x,y,z|prefabName
                 var parts = saved.Split(new[] { '|' }, StringSplitOptions.None);
                 if (parts.Length < 3) continue;
                 string prefix = parts[0];
@@ -534,23 +505,20 @@ public class SeasonalSpawnManager : MonoBehaviour
                 if (marker == null)
                 {
                     if (debugMode) Debug.LogWarning($"[SeasonalSpawnManager] Marker not found for saved path: {path} — removing saved entry");
-                    activatedKeys.Remove(saved); // nettoie l'entrée obsolète
+                    activatedKeys.Remove(saved); 
                     removedAny = true;
                     continue;
                 }
 
-                // skip if already has SpawnedSeasonal activated
                 var existing = marker.GetComponent<SpawnedSeasonal>();
                 if (existing != null && existing.activated) continue;
 
-                // find prefab by name in corresponding pool
                 GameObject prefab = null;
                 if (!string.IsNullOrEmpty(prefabName))
                 {
                     prefab = (prefix == "H") ? halloweenPrefabs.FirstOrDefault(p => p != null && p.name == prefabName)
                                              : winterPrefabs.FirstOrDefault(p => p != null && p.name == prefabName);
                 }
-                // fallback choose random from pool
                 if (prefab == null)
                 {
                     prefab = (prefix == "H") ? (halloweenPrefabs.Count > 0 ? halloweenPrefabs[UnityEngine.Random.Range(0, halloweenPrefabs.Count)] : null)
@@ -560,7 +528,6 @@ public class SeasonalSpawnManager : MonoBehaviour
 
                 Vector3 spawnPos = marker.position + Vector3.up * 1f;
 
-                // compute rotation with ground normal + random yaw when possible
                 Quaternion finalRot;
                 if (TryGetGroundHitUnderPosition(marker.position, out RaycastHit groundHit))
                 {
@@ -616,15 +583,12 @@ public class SeasonalSpawnManager : MonoBehaviour
         }
     }
 
-    // recherche d'un Transform par chemin hiérarchique (stable)
     private Transform FindTransformByHierarchyPath(string path)
     {
         if (string.IsNullOrEmpty(path)) return null;
         var parts = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
         Transform cur = null;
-        // find root(s) in scene
         var roots = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
-        // find matching root
         foreach (var root in roots)
         {
             if (root.name == parts[0])
@@ -664,19 +628,15 @@ public class SeasonalSpawnManager : MonoBehaviour
         Debug.Log("[SeasonalSpawnManager] Données sauvegardées effacées.");
     }
 
-    /// <summary>
-    /// ✅ Reset complet du système de spawn (spawners saisonniers + miniboss)
-    /// </summary>
+
     public void ResetSpawns()
     {
         if (debugMode) Debug.Log("[SeasonalSpawnManager] === RESET COMPLET DES SPAWNS ===");
 
-        // 1. Effacer les données sauvegardées dans PlayerPrefs
         activatedKeys.Clear();
         PlayerPrefs.DeleteKey(prefsKey);
         PlayerPrefs.Save();
 
-        // 2. Détruire tous les objets spawnés saisonniers (visuels + spawners)
         var spawnedObjects = FindObjectsOfType<SpawnedSeasonal>();
         int seasonalCount = 0;
         foreach (var spawned in spawnedObjects)
@@ -688,27 +648,21 @@ public class SeasonalSpawnManager : MonoBehaviour
             }
         }
 
-        // 3. ✅ MODIFIÉ : Reset des miniboss via coroutine (attendre que LevelData soit à jour)
         StartCoroutine(ResetMinibossSpawnersDelayed());
 
-        // 4. Réinitialiser le tracker de niveau
-        lastLevel = -1; // Forcer UpdateSpawnsByLevel à se relancer
+        lastLevel = -1; 
 
         if (debugMode) 
             Debug.Log($"[SeasonalSpawnManager] ✅ Reset terminé : {seasonalCount} objets détruits, miniboss en cours de reset...");
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Reset les spawners de miniboss après un délai (pour que LevelData soit prêt)
-    /// </summary>
+
     private IEnumerator ResetMinibossSpawnersDelayed()
     {
-        // Attendre une frame pour que LevelData soit à jour
         yield return null;
 
         int resetCount = 0;
 
-        // Trouver tous les SpawnerContent de type Miniboss dans la scène
         SpawnerContent[] allSpawners = FindObjectsOfType<SpawnerContent>();
         
         foreach (var spawner in allSpawners)
@@ -716,22 +670,20 @@ public class SeasonalSpawnManager : MonoBehaviour
             if (spawner == null)
                 continue;
 
-            // Vérifier si c'est un spawner de miniboss
             if (spawner.Type == SpawnerType.Miniboss)
             {
                 spawner.ResetSpawner();
                 resetCount++;
                 
                 if (debugMode)
-                    Debug.Log($"[SeasonalSpawnManager] 🔄 Miniboss spawner réinitialisé : {spawner.gameObject.name}");
+                    Debug.Log($"[SeasonalSpawnManager] Miniboss spawner réinitialisé : {spawner.gameObject.name}");
             }
         }
 
         if (debugMode)
-            Debug.Log($"[SeasonalSpawnManager] ✅ {resetCount} spawner(s) de miniboss réinitialisés");
+            Debug.Log($"[SeasonalSpawnManager] {resetCount} spawner(s) de miniboss réinitialisés");
     }
 
-    // appelez ceci depuis Awake() pour tracer ce qui existe dans la scène
     private void DebugListMarkers()
     {
         var allTransforms = UnityEngine.Object.FindObjectsOfType<Transform>();
@@ -754,7 +706,6 @@ public class SeasonalSpawnManager : MonoBehaviour
     }
 }
 
-// Extension helper pour CompareTag sans exception
 public static class TransformExtensions
 {
     public static bool CompareTagSafe(this Transform t, string tag)

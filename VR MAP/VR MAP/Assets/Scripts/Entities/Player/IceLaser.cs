@@ -12,7 +12,6 @@ public class IceLaser : MonoBehaviour
 
     private void Start()
     {
-        // Récupérer les stats du joueur pour utiliser iceDuration
         playerStats = FindObjectOfType<PlayerStats>();
 
         if (playerStats != null)
@@ -29,8 +28,6 @@ public class IceLaser : MonoBehaviour
         Enemy enemy = other.GetComponentInParent<Enemy>();
         if (enemy != null)
         {
-            // ✅ MODIFIÉ : Appliquer le slow au lieu du stun
-            // Utiliser la durée du PlayerStats si disponible
             float duration = playerStats != null ? playerStats.iceDuration : slowDuration;
             enemy.ApplySlow(slowFactor, duration);
         }

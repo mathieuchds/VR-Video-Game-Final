@@ -18,7 +18,6 @@ public class CursorManager : MonoBehaviour
     private Texture2D defaultCursor;
     private Texture2D defaultHoverCursor;
 
-    // Cache pour éviter de recréer les textures à chaque appel
     private readonly Dictionary<Object, Texture2D> assetToTextureCache = new Dictionary<Object, Texture2D>();
 
     void Awake()
@@ -27,7 +26,6 @@ public class CursorManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // tenter de résoudre les assets fournis vers des Texture2D utilisables
         defaultCursor = ResolveToTexture(defaultCursorAsset);
         defaultHoverCursor = ResolveToTexture(defaultHoverCursorAsset);
 
@@ -44,9 +42,7 @@ public class CursorManager : MonoBehaviour
         SetCursor(defaultCursor, defaultHotspot);
     }
 
-    /// <summary>
-    /// Définit le curseur à partir d'une Texture2D (classique).
-    /// </summary>
+
     public void SetCursor(Texture2D tex, Vector2 hotspot)
     {
         if (tex == null)
@@ -57,18 +53,14 @@ public class CursorManager : MonoBehaviour
         Cursor.SetCursor(tex, hotspot, CursorMode.Auto);
     }
 
-    /// <summary>
-    /// Convenience: accepte un asset generic (Texture2D ou Sprite) et applique.
-    /// </summary>
+
     public void SetCursorFromAsset(Object asset, Vector2 hotspot)
     {
         var tex = ResolveToTexture(asset);
         SetCursor(tex, hotspot);
     }
 
-    /// <summary>
-    /// Définit le curseur de hover ; accepte un Texture2D ou un asset convertible.
-    /// </summary>
+
     public void SetHoverCursor(Object hoverAsset, Vector2 hotspot)
     {
         var tex = ResolveToTexture(hoverAsset) ?? defaultHoverCursor;
@@ -80,29 +72,22 @@ public class CursorManager : MonoBehaviour
         ApplyDefault();
     }
 
-    /// <summary>
-    /// Résout un UnityEngine.Object en Texture2D si possible (Texture2D ou Sprite).
-    /// Pour un Sprite provenant d'une atlas, crée une Texture2D croppée contenant uniquement le sprite.
-    /// </summary>
+
     private Texture2D ResolveToTexture(Object asset)
     {
         if (asset == null) return null;
 
-        // Utiliser le cache si possible
         if (assetToTextureCache.TryGetValue(asset, out var cached))
             return cached;
 
         Texture2D result = null;
 
-        // Si c'est déjà une Texture2D (png importé etc.)
         if (asset is Texture2D t2)
         {
             result = t2;
         }
-        // Si c'est un Sprite (sprite asset provenant d'une atlas ou texture isolée)
         else if (asset is Sprite sp)
         {
-            // Récupérer la texture source (atlas)
             Texture2D src = sp.texture;
             if (src == null)
             {
@@ -111,7 +96,6 @@ public class CursorManager : MonoBehaviour
                 return null;
             }
 
-            // Vérifier que la texture source est readable
             try
             {
                 // Texture2D.GetPixel ne lancera pas d'exception ici mais GetPixels peut
@@ -138,8 +122,7 @@ public class CursorManager : MonoBehaviour
                 result = null;
             }
         }
-        // Si l'utilisateur a drag un GameObject contenant un SpriteRenderer ou Image,
-        // essayer d'en extraire la texture
+
         else if (asset is GameObject go)
         {
             var sr = go.GetComponent<SpriteRenderer>();
@@ -154,11 +137,9 @@ public class CursorManager : MonoBehaviour
         }
         else
         {
-            // cas non pris en charge (DefaultAsset par ex.)
             result = null;
         }
 
-        // Mettre en cache (même si null pour éviter retries)
         assetToTextureCache[asset] = result;
         return result;
     }

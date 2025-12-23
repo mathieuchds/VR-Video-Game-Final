@@ -69,11 +69,9 @@ public class PlayerController : MonoBehaviour
     [Header("VFX")]
     [SerializeField] private ShockwaveVFX shockwavePrefab;
 
-    // Slow state
     private bool isSlowed = false;
     private Coroutine slowCoroutine = null;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         stats = GetComponent<PlayerStats>();
@@ -177,10 +175,9 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                // ✅ MODIFIÉ : Améliorer à la fois la durée d'activation ET la durée de l'effet de brûlure
-                flameThrowerDuration += 2f;           // Durée pendant laquelle le lance-flammes est actif
-                stats.flameDuration += 1f;            // ✅ NOUVEAU : Durée de l'effet de brûlure sur l'ennemi
-                stats.flameDamagePerSecond += 6f;     // ✅ NOUVEAU : Augmenter aussi les dégâts par seconde
+                flameThrowerDuration += 2f;          
+                stats.flameDuration += 1f;           
+                stats.flameDamagePerSecond += 6f;     
             }
         }
         else if (powerName == "PoisonBullets")
@@ -315,7 +312,6 @@ public class PlayerController : MonoBehaviour
         isSpeedBoostActive = false;
     }
 
-    // ApplySlow: reduce player's moveSpeed by factor for duration (non-stacking)
     public void ApplySlow(float factor, float duration)
     {
         if (isSlowed)
@@ -340,7 +336,6 @@ public class PlayerController : MonoBehaviour
 
     private void DoShockwave()
     {
-        //VFX
         if (shockwavePrefab != null)
         {
             ShockwaveVFX vfx = Instantiate(
@@ -387,7 +382,6 @@ public class PlayerController : MonoBehaviour
 
     private void OnDisable()
     {
-        // Désabonner les Input Actions pour éviter les MissingReferenceException
         if (zqsd != null && zqsd.action != null)
         {
             zqsd.action.Disable();
@@ -417,7 +411,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
 

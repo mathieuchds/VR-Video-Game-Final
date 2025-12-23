@@ -8,7 +8,7 @@ public class Bear : Enemy
     public float attackRange = 2f;
     public float attackCooldown = 2f;
     [Tooltip("Distance maximale pour infliger des dégâts lors de l'attaque")]
-    [SerializeField] private float damageRange = 5f; // ✅ NOUVEAU : Distance pour les dégâts
+    [SerializeField] private float damageRange = 5f; 
     [Tooltip("Délai après le déclenchement de l'attaque avant d'appliquer les dégâts (pour sync avec l'animation)")]
     [SerializeField] private float damageDelay = 0.5f;
 
@@ -23,7 +23,6 @@ public class Bear : Enemy
     private float lastAttackTime = -999f; // Permet d'attaquer dès le début
     private bool isInAttackRange = false;
     
-    // ✅ NOUVEAU : Tracking du temps hors NavMesh
     private float timeOffNavMesh = 0f;
     private bool wasOnNavMesh = true;
 
@@ -107,7 +106,6 @@ public class Bear : Enemy
             return;
         }
 
-        // ✅ NOUVEAU : Vérifier si l'agent est sur la NavMesh
         if (!IsAgentOnNavMesh())
         {
             // Agent hors NavMesh
@@ -144,7 +142,6 @@ public class Bear : Enemy
             }
         }
 
-        // ✅ Comportement normal (uniquement si sur NavMesh)
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
         // Si l'ours est assez proche pour attaquer
@@ -155,7 +152,6 @@ public class Bear : Enemy
             {
                 isInAttackRange = true;
                 
-                // ✅ SÉCURISÉ : Vérifier que l'agent peut recevoir des commandes
                 if (agent.isOnNavMesh && agent.enabled)
                 {
                     agent.ResetPath();
@@ -172,20 +168,18 @@ public class Bear : Enemy
                 animator.SetTrigger("Attack");
                 lastAttackTime = Time.time;
                 
-                // ✅ NOUVEAU : Lancer la coroutine pour appliquer les dégâts après le délai
                 StartCoroutine(DealDamageAfterDelay());
             }
         }
         else
         {
-            // Sortie de la zone d'attaque - recommencer à courir
+            // Sortie de la zone d'attaque, recommencer à courir
             if (isInAttackRange)
             {
                 isInAttackRange = false;
                 Debug.Log("[Bear] Sortie de la zone d'attaque - IsWalking = true");
             }
 
-            // ✅ SÉCURISÉ : Courir vers le joueur seulement si sur NavMesh
             if (agent.isOnNavMesh && agent.enabled)
             {
                 agent.SetDestination(player.position);
@@ -198,9 +192,7 @@ public class Bear : Enemy
         }
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Applique les dégâts après un délai (pour sync avec l'animation)
-    /// </summary>
+
     private System.Collections.IEnumerator DealDamageAfterDelay()
     {
         // Attendre que l'animation arrive au moment du coup
@@ -210,19 +202,15 @@ public class Bear : Enemy
         DealDamageToPlayer();
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Vérifie si l'agent est sur la NavMesh
-    /// </summary>
+
     private bool IsAgentOnNavMesh()
     {
         if (agent == null || !agent.enabled)
             return false;
 
-        // Méthode 1 : Vérifier isOnNavMesh
         if (!agent.isOnNavMesh)
             return false;
 
-        // Méthode 2 : Vérifier avec NavMesh.SamplePosition (plus précis)
         NavMeshHit hit;
         if (NavMesh.SamplePosition(transform.position, out hit, 1.0f, NavMesh.AllAreas))
         {
@@ -233,9 +221,7 @@ public class Bear : Enemy
         return false;
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Tue l'ennemi et ajoute 1 au compteur du joueur
-    /// </summary>
+
     private void KillAndCountForPlayer()
     {
         // Ajouter au compteur de quête
@@ -243,7 +229,6 @@ public class Bear : Enemy
         if (questManager != null)
         {
             questManager.AddProgress(QuestObjectiveType.KillEnemy, 1);
-            Debug.Log($"[Bear] ✅ +1 kill ajouté au compteur");
         }
 
         // Ajouter du score
@@ -255,7 +240,6 @@ public class Bear : Enemy
             float scoreToAdd = 10f + currentLevel;
             
             playerStats.AddScore(scoreToAdd);
-            Debug.Log($"[Bear] ✅ +{scoreToAdd} score ajouté");
         }
 
         // Notifier le spawner si présent
@@ -268,9 +252,6 @@ public class Bear : Enemy
         Destroy(gameObject);
     }
 
-    /// <summary>
-    /// ✅ MODIFIÉ : Applique les dégâts au joueur si la distance XY est ≤ damageRange
-    /// </summary>
     public void DealDamageToPlayer()
     {
         Debug.Log("[Bear] 💥 DealDamageToPlayer() appelé");
@@ -281,18 +262,15 @@ public class Bear : Enemy
             return;
         }
 
-        // ✅ MODIFIÉ : Calculer la distance euclidienne en XY (ignorant Z ou Y selon votre orientation)
-        // Si votre jeu est en 3D avec Y comme hauteur, on calcule distance en XZ
+
         Vector3 bearPosXZ = new Vector3(transform.position.x, 0, transform.position.z);
         Vector3 playerPosXZ = new Vector3(player.position.x, 0, player.position.z);
         float distanceXZ = Vector3.Distance(bearPosXZ, playerPosXZ);
         
         Debug.Log($"[Bear] Distance XZ au joueur: {distanceXZ:F2} / Damage Range: {damageRange:F2}");
 
-        // ✅ NOUVEAU : Vérifier si la distance est ≤ 5 (ou damageRange)
         if (distanceXZ <= damageRange)
         {
-            // ✅ Recherche plus robuste de PlayerStats
             PlayerStats ps = player.GetComponent<PlayerStats>();
             
             if (ps == null)
@@ -303,7 +281,6 @@ public class Bear : Enemy
             
             if (ps == null)
             {
-                // Fallback : chercher par tag
                 GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
                 if (playerGO != null)
                     ps = playerGO.GetComponent<PlayerStats>();
@@ -312,30 +289,18 @@ public class Bear : Enemy
             if (ps != null)
             {
                 ps.ApplyRawDamage(contactDamage);
-                Debug.Log($"[Bear] ✅ Dégâts infligés au joueur : {contactDamage} (distance XZ: {distanceXZ:F2})");
             }
-            else
-            {
-                Debug.LogError($"[Bear] ❌ PlayerStats introuvable sur le joueur {player.name}");
-            }
+           
         }
-        else
-        {
-            Debug.LogWarning($"[Bear] ⚠️ Joueur hors de portée de dégâts ! Distance XZ: {distanceXZ:F2} > Damage Range: {damageRange:F2}");
-        }
+        
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Override du knockback pour gérer le retour sur NavMesh
-    /// </summary>
     public new void Knockback(Vector3 direction, float force, float duration)
     {
         StartCoroutine(SafeKnockbackRoutine(direction, force, duration));
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Coroutine de knockback qui replace l'ours sur la NavMesh
-    /// </summary>
+
     private System.Collections.IEnumerator SafeKnockbackRoutine(Vector3 dir, float force, float duration)
     {
         dir.y = 0f;
@@ -355,7 +320,6 @@ public class Bear : Enemy
         rb.linearVelocity = Vector3.zero;
         rb.isKinematic = true;
 
-        // ✅ NOUVEAU : Essayer de replacer sur la NavMesh
         if (hadAgent)
         {
             NavMeshHit hit;

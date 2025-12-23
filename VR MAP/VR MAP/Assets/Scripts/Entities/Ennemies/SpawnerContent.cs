@@ -77,7 +77,6 @@ public class SpawnerContent : MonoBehaviour
     [SerializeField, Tooltip("Facteur de réduction d'intervalle par vague (plus la vague est haute, plus c'est rapide)")]
     private float intervalReductionPerWave = 0.05f;
 
-    // ✅ NOUVEAU : Variabilité de l'intervalle
     [Header("Interval Variability")]
     [SerializeField, Tooltip("Variabilité de l'intervalle en pourcentage (0.5 = ±50%)"), Range(0f, 1f)]
     private float intervalVariability = 0.5f;
@@ -90,7 +89,6 @@ public class SpawnerContent : MonoBehaviour
 
     private Coroutine spawnCoroutine;
 
-    // Optionnel : callback C#
     public event Action<SpawnerContent> WaveCompleted;
 
     // Level listening
@@ -99,7 +97,6 @@ public class SpawnerContent : MonoBehaviour
 
     private void Awake()
     {
-        // Rendre ce GameObject invisible (désactiver renderers et colliders)
         HideSpawnerVisuals();
 
         if (mobPrefabs == null || mobPrefabs.Length != 3)
@@ -114,7 +111,6 @@ public class SpawnerContent : MonoBehaviour
 
     private void Start()
     {
-        // ✅ Rechercher LevelData
         levelData = FindObjectOfType<LevelData>();
         
         if (levelData != null)
@@ -133,11 +129,9 @@ public class SpawnerContent : MonoBehaviour
 
     private void OnEnable()
     {
-        // ✅ MODIFIÉ : Toujours chercher LevelData et redémarrer
         if (spawnerType == SpawnerType.Miniboss && debugMode)
             Debug.Log($"[SpawnerContent] Miniboss spawner '{name}' réactivé (OnEnable)");
 
-        // Chercher LevelData si on ne l'a pas encore
         if (levelData == null)
         {
             levelData = FindObjectOfType<LevelData>();
@@ -146,17 +140,15 @@ public class SpawnerContent : MonoBehaviour
                 Debug.Log($"[SpawnerContent] LevelData {(levelData != null ? "trouvé" : "introuvable")}");
         }
 
-        // Si on a LevelData, forcer le restart
         if (levelData != null)
         {
-            observedLevel = -1; // Forcer un nouveau démarrage
+            observedLevel = -1; 
             StartCoroutine(DelayedRestart());
         }
     }
 
     private void Update()
     {
-        // ✅ Chercher LevelData si on ne l'a pas
         if (levelData == null)
         {
             levelData = FindObjectOfType<LevelData>();
@@ -171,7 +163,6 @@ public class SpawnerContent : MonoBehaviour
             return;
         }
 
-        // Détecter changement de niveau
         if (levelData.level != observedLevel)
         {
             observedLevel = levelData.level;
@@ -199,7 +190,6 @@ public class SpawnerContent : MonoBehaviour
         }
     }
 
-    // Initialize called by SeasonalSpawnManager (optional)
     public void Initialize(SpawnerSeason season, GameObject[] prefabs)
     {
         seasonType = season;
@@ -224,21 +214,16 @@ public class SpawnerContent : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// ✅ Reset complet du spawner (force le restart du spawn)
-    /// </summary>
+
     public void ResetSpawner()
     {
         if (spawnerType == SpawnerType.Miniboss && debugMode)
             Debug.Log($"[SpawnerContent] 🔄 ResetSpawner() appelé sur '{name}'");
 
-        // 1. Arrêter tout spawn en cours
         StopSpawning();
 
-        // 2. Réinitialiser le niveau observé pour forcer un nouveau spawn
         observedLevel = -1;
 
-        // 3. Chercher LevelData si nécessaire
         if (levelData == null)
         {
             levelData = FindObjectOfType<LevelData>();
@@ -247,18 +232,14 @@ public class SpawnerContent : MonoBehaviour
                 Debug.Log($"[SpawnerContent] LevelData {(levelData != null ? "trouvé" : "INTROUVABLE")} lors du reset");
         }
 
-        // 4. Redémarrer avec délai
         StartCoroutine(DelayedRestart());
     }
 
-    /// <summary>
-    /// ✅ Redémarre le spawner après une frame
-    /// </summary>
+
     private IEnumerator DelayedRestart()
     {
         yield return null; // Attendre une frame
         
-        // ✅ Chercher LevelData si on ne l'a toujours pas
         if (levelData == null)
         {
             levelData = FindObjectOfType<LevelData>();
@@ -271,13 +252,13 @@ public class SpawnerContent : MonoBehaviour
             
             if (spawnerType == SpawnerType.Miniboss)
             {
-                Debug.Log($"[SpawnerContent] ✅ Miniboss spawner '{name}' redémarré pour vague {observedLevel}");
+                Debug.Log($"[SpawnerContent] Miniboss spawner '{name}' redémarré pour vague {observedLevel}");
             }
         }
         else
         {
             if (spawnerType == SpawnerType.Miniboss)
-                Debug.LogError($"[SpawnerContent] ❌ Miniboss spawner '{name}' ne peut pas redémarrer : LevelData introuvable !");
+                Debug.LogError($"[SpawnerContent] Miniboss spawner '{name}' ne peut pas redémarrer : LevelData introuvable !");
         }
     }
 
@@ -337,7 +318,7 @@ public class SpawnerContent : MonoBehaviour
         }
 
         if (spawnerType == SpawnerType.Miniboss)
-            Debug.Log($"[SpawnerContent] 👹 Miniboss spawner '{name}' va spawner {remainingTotal} ennemi(s)");
+            Debug.Log($"[SpawnerContent] Miniboss spawner '{name}' va spawner {remainingTotal} ennemi(s)");
 
         float baseIntervalClamped = Mathf.Max(minInterval, baseInterval);
 
@@ -363,17 +344,15 @@ public class SpawnerContent : MonoBehaviour
 
             GameObject spawnedEnemy = Instantiate(prefab, spawnPos, spawnRot, null);
 
-            // Appliquer les stats de miniboss si nécessaire
             if (spawnerType == SpawnerType.Miniboss)
             {
-                //ApplyMinibossModifiers(spawnedEnemy);
-                Debug.Log($"[SpawnerContent] 👹 Miniboss '{spawnedEnemy.name}' spawné !");
+                //ApplyMinibossModifiers(spawnedEnemy); censé faire spawn des miniboss modifiés, mais problème d'équilibrage, désactivé
+                Debug.Log($"[SpawnerContent] Miniboss '{spawnedEnemy.name}' spawné !");
             }
 
             baseCounts[choice]--;
             remainingTotal--;
 
-            // ✅ NOUVEAU : Calculer l'intervalle avec variabilité aléatoire
             float randomizedInterval = CalculateRandomInterval(baseIntervalClamped);
             
             if (debugMode)
@@ -387,24 +366,18 @@ public class SpawnerContent : MonoBehaviour
         WaveCompleted?.Invoke(this);
         
         if (spawnerType == SpawnerType.Miniboss)
-            Debug.Log($"[SpawnerContent] ✅ Miniboss spawner '{name}' terminé pour vague {waveNumber}");
+            Debug.Log($"[SpawnerContent] Miniboss spawner '{name}' terminé pour vague {waveNumber}");
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Calcule un intervalle aléatoire avec variabilité
-    /// </summary>
-    /// <param name="baseInterval">Intervalle de base en secondes</param>
-    /// <returns>Intervalle randomisé entre (base * (1 - variability)) et (base * (1 + variability))</returns>
+
     private float CalculateRandomInterval(float baseInterval)
     {
-        // Calculer les bornes min et max
         float minRange = baseInterval * (1f - intervalVariability);
         float maxRange = baseInterval * (1f + intervalVariability);
         
         // Générer un nombre aléatoire entre min et max
         float randomInterval = UnityEngine.Random.Range(minRange, maxRange);
         
-        // S'assurer que l'intervalle ne descend pas en dessous du minInterval absolu
         return Mathf.Max(minInterval, randomInterval);
     }
 
@@ -444,7 +417,6 @@ public class SpawnerContent : MonoBehaviour
         }
     }
 
-    // Helpers
     private static int CountNonNull(GameObject[] arr)
     {
         if (arr == null) return 0;

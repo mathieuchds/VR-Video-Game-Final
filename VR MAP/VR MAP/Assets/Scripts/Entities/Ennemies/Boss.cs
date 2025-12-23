@@ -57,6 +57,14 @@ public class Boss : Enemy
     private bool bossDead = false;
 
 
+
+    public float contactDamage = 20f;
+    public float contactDamageCooldown = 1f;
+
+    private float contactTimer = 0f;
+
+
+
     private void PhaseSelect()
     {
         if (health > maxHealth * 0.60f)
@@ -79,7 +87,6 @@ public class Boss : Enemy
             randomDir.Normalize();
 
             GameObject b = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
-            Destroy(b, 3f);
 
             Rigidbody rb = b.GetComponent<Rigidbody>();
             rb.AddForce(randomDir * shootForce, ForceMode.Impulse);
@@ -179,6 +186,11 @@ public class Boss : Enemy
             else if (!isSweeping)
                 StartCoroutine(SweepingLaser());
         }
+
+        if (contactTimer > 0f)
+            contactTimer -= Time.deltaTime;
+
+
     }
 
     private System.Collections.IEnumerator SweepingLaser()
@@ -274,6 +286,24 @@ public class Boss : Enemy
         }
     }
 
+    private void OnTriggerStay(Collider other)
+    {
+        if (bossDead)
+            return;
+
+        if (contactTimer > 0f)
+            return;
+
+        if (other.CompareTag("Player"))
+        {
+            PlayerStats ps = other.GetComponentInParent<PlayerStats>();
+            if (ps != null)
+            {
+                ps.TakeDamage(contactDamage);
+                contactTimer = contactDamageCooldown;
+            }
+        }
+    }
 
 
 

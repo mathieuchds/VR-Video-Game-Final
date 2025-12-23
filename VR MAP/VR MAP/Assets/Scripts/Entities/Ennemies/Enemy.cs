@@ -11,7 +11,7 @@ public class Enemy : MonoBehaviour
 
     public float flashTime = 0.1f;
     public bool isStunned = false;
-    public bool isSlowed = false; // ✅ NOUVEAU : Flag pour détecter le slow
+    public bool isSlowed = false; 
 
     private Renderer rend;
     private Color baseColor;
@@ -36,13 +36,13 @@ public class Enemy : MonoBehaviour
     [Tooltip("Multiplicateur de taille pour l'effet de poison")]
     [SerializeField] protected float poisonScale = 1.5f;
 
-    [SerializeField] protected GameObject slowEffectPrefab; // ✅ NOUVEAU : Prefab de slow
+    [SerializeField] protected GameObject slowEffectPrefab; 
     [Tooltip("Multiplicateur de taille pour l'effet de slow")]
-    [SerializeField] protected float slowScale = 1.5f; // ✅ NOUVEAU
+    [SerializeField] protected float slowScale = 1.5f; 
 
     protected GameObject currentFlame;
     protected GameObject currentPoison;
-    protected GameObject currentSlow; // ✅ NOUVEAU : Référence à l'effet de slow actuel
+    protected GameObject currentSlow; 
 
     protected void Start()
     {
@@ -71,7 +71,6 @@ public class Enemy : MonoBehaviour
         rend = GetComponent<Renderer>();
         if (rend != null) baseColor = rend.material.color;
 
-        // ✅ NOUVEAU : Ajouter le composant OutOfBoundsChecker si absent
         if (GetComponent<EnemyOutOfBoundsChecker>() == null)
         {
             gameObject.AddComponent<EnemyOutOfBoundsChecker>();
@@ -93,7 +92,6 @@ public class Enemy : MonoBehaviour
     {
         if (currentFlame != null)
         {
-            Debug.Log("[Enemy] Déjà en feu");
             return;
         }
 
@@ -107,7 +105,6 @@ public class Enemy : MonoBehaviour
         if (currentFlame != null)
         {
             currentFlame.transform.localScale = Vector3.one * flameScale;
-            Debug.Log($"[Enemy] 🔥 Effet de flamme appliqué (scale: {flameScale})");
         }
 
         StartCoroutine(Burn());
@@ -135,7 +132,6 @@ public class Enemy : MonoBehaviour
     {
         if (currentPoison != null)
         {
-            Debug.Log("[Enemy] Déjà empoisonné");
             return;
         }
 
@@ -151,13 +147,9 @@ public class Enemy : MonoBehaviour
             if (currentPoison != null)
             {
                 currentPoison.transform.localScale = Vector3.one * poisonScale;
-                Debug.Log($"[Enemy] 🧪 Effet de poison appliqué (scale: {poisonScale})");
             }
         }
-        else
-        {
-            Debug.LogWarning("[Enemy] ⚠️ Aucun prefab d'effet de poison assigné !");
-        }
+
 
         StartCoroutine(Poison());
     }
@@ -180,21 +172,14 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Applique un effet de slow à l'ennemi avec particules visuelles
-    /// </summary>
-    /// <param name="slowFactor">Facteur de réduction de vitesse (ex: 0.5 = 50% de la vitesse)</param>
-    /// <param name="duration">Durée du slow en secondes</param>
     public void ApplySlow(float slowFactor, float duration)
     {
-        // Si déjà slow, ne pas appliquer un nouveau slow
         if (isSlowed)
         {
             Debug.Log("[Enemy] Déjà ralenti");
             return;
         }
 
-        // ✅ Instancier l'effet de slow
         if (slowEffectPrefab != null)
         {
             currentSlow = Instantiate(
@@ -207,45 +192,40 @@ public class Enemy : MonoBehaviour
             if (currentSlow != null)
             {
                 currentSlow.transform.localScale = Vector3.one * slowScale;
-                Debug.Log($"[Enemy] ❄️ Effet de slow appliqué (scale: {slowScale}, factor: {slowFactor}, durée: {duration}s)");
+                Debug.Log($"[Enemy] Effet de slow appliqué (scale: {slowScale}, factor: {slowFactor}, durée: {duration}s)");
             }
         }
         else
         {
-            Debug.LogWarning("[Enemy] ⚠️ Aucun prefab d'effet de slow assigné !");
+            Debug.LogWarning("[Enemy] Aucun prefab d'effet de slow assigné !");
         }
 
         StartCoroutine(SlowRoutine(slowFactor, duration));
     }
 
-    /// <summary>
-    /// ✅ NOUVEAU : Coroutine qui gère le slow temporaire
-    /// </summary>
+
     protected IEnumerator SlowRoutine(float slowFactor, float duration)
     {
         isSlowed = true;
         float originalSpeed = speed;
 
-        // Réduire la vitesse
+        speed= originalSpeed * slowFactor;
         if (agent != null)
         {
             agent.speed = originalSpeed * slowFactor;
-            Debug.Log($"[Enemy] ❄️ Vitesse réduite de {originalSpeed} à {agent.speed}");
+            Debug.Log($"[Enemy] Vitesse réduite de {originalSpeed} à {agent.speed}");
         }
 
-        // Attendre la durée du slow
         yield return new WaitForSeconds(duration);
-
-        // Restaurer la vitesse originale (sauf si stunné)
+        speed = originalSpeed;
         if (agent != null && !isStunned)
         {
             agent.speed = originalSpeed;
-            Debug.Log($"[Enemy] ✅ Vitesse restaurée à {originalSpeed}");
+            Debug.Log($"[Enemy] Vitesse restaurée à {originalSpeed}");
         }
 
         isSlowed = false;
 
-        // Détruire l'effet visuel
         if (currentSlow != null)
         {
             Destroy(currentSlow);
@@ -282,29 +262,22 @@ public class Enemy : MonoBehaviour
 
     public void Stun(float duration)
     {
+        StopAllCoroutines();
         StartCoroutine(StunRoutine(speed, duration));
     }
 
     protected IEnumerator StunRoutine(float baseSpeed, float duration)
     {
         isStunned = true;
-
+        speed = 0f;
         if (agent != null)
             agent.speed = 0f;
 
         yield return new WaitForSeconds(duration);
-
-        // ✅ MODIFIÉ : Restaurer la vitesse en tenant compte du slow
+        speed= baseSpeed;
         if (agent != null)
         {
-            if (isSlowed)
-            {
-                // Si encore slow, ne pas restaurer à la vitesse de base
-                // Le SlowRoutine s'en chargera
-                Debug.Log("[Enemy] Stun terminé mais encore slow");
-            }
-            else
-            {
+            if (!isSlowed) {
                 agent.speed = baseSpeed;
             }
         }
@@ -347,18 +320,15 @@ public class Enemy : MonoBehaviour
 
         ps.AddScore(10f + currentLevel);
 
-        // ✅ MODIFIÉ : Nettoyer TOUS les effets visuels à la mort
         if (currentFlame != null)
             Destroy(currentFlame);
         if (currentPoison != null)
             Destroy(currentPoison);
-        if (currentSlow != null) // ✅ NOUVEAU
+        if (currentSlow != null) 
             Destroy(currentSlow);
 
-        // Si c'est le boss victoire
         if (CompareTag("Boss"))
         {
-            Debug.Log("[Enemy] BOSS MORT = FIN DU JEU");
 
             GameStateManager gsm = FindObjectOfType<GameStateManager>(true);
             if (gsm != null)

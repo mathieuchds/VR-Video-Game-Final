@@ -15,8 +15,7 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] public int defense = 5;
     [SerializeField] public float moveSpeed = 1f;
 
-    //[SerializeField] public int mana = 50;
-    //[SerializeField] public int maxMana = 50;
+
 
 
     [Header("Power Up")]
@@ -57,7 +56,6 @@ public class PlayerStats : MonoBehaviour
     private GameStateManager gameStateManager;
     private bool isDead = false; 
 
-    // --- Slow state (non stacking) ---
     private bool isSlowed = false;
     private Coroutine slowCoroutine = null;
     private float originalMoveSpeed = -1f;
@@ -71,20 +69,17 @@ public class PlayerStats : MonoBehaviour
             Debug.LogError("[PlayerStats] GameStateManager introuvable ! Le Game Over ne pourra pas se déclencher.");
         }
 
-        // store original base move speed for safe restore
         originalMoveSpeed = moveSpeed;
 
         ResetStats();
     }
 
-    // ✅ NOUVEAU : Méthode pour réinitialiser les stats
     public void ResetStats()
     {
         currentHealth = maxHealth;
         isDead = false;
         HealthUpdate?.Invoke();
 
-        // restore base move speed and cancel slow if any
         if (slowCoroutine != null)
         {
             StopCoroutine(slowCoroutine);
@@ -98,15 +93,11 @@ public class PlayerStats : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
-        // ✅ Ne pas prendre de dégâts si déjà mort
         if (isDead)
             return;
 
-        // calcule damage effectif en tenant compte de la défense
         float finalDamage = Mathf.Max(amount - defense, 0f);
 
-        // debug log pour vérifier les appels (utile pour ton problème)
-        Debug.Log($"[PlayerStats] TakeDamage called: amount={amount:F2}, defense={defense}, finalDamage={finalDamage:F2}, healthBefore={currentHealth:F2}");
 
         currentHealth -= finalDamage;
         
@@ -114,7 +105,6 @@ public class PlayerStats : MonoBehaviour
         
         HealthUpdate?.Invoke();
 
-        Debug.Log($"[PlayerStats] Health after damage: {currentHealth:F2}/{maxHealth:F2}");
 
         if (currentHealth <= 0f && !isDead)
         {
@@ -122,7 +112,6 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
-    // NOUVEAU : Appliquer des dégâts "bruts" sans soustraire la défense
     public void ApplyRawDamage(float amount)
     {
         if (isDead) return;
@@ -167,21 +156,17 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
-    // Public API: apply a slow that does NOT stack. If already slowed, the call is ignored.
     public void ApplySlow(float factor, float duration)
     {
         if (isSlowed)
             return;
 
-        // ensure we have a sensible base value to restore later
         if (originalMoveSpeed <= 0f)
             originalMoveSpeed = moveSpeed;
 
-        // apply slow immediately
         moveSpeed = originalMoveSpeed * factor;
         isSlowed = true;
 
-        // start restore coroutine on this component (safe because this GameObject is the player)
         if (slowCoroutine != null)
             StopCoroutine(slowCoroutine);
         slowCoroutine = StartCoroutine(RestoreSlowRoutine(originalMoveSpeed, duration));
@@ -191,7 +176,6 @@ public class PlayerStats : MonoBehaviour
     {
         yield return new WaitForSeconds(duration);
 
-        // restore only if not dead (but restore even if dead is harmless)
         moveSpeed = baseSpeed;
         isSlowed = false;
         slowCoroutine = null;

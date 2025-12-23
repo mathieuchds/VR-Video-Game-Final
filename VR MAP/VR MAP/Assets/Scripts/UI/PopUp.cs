@@ -42,27 +42,21 @@ public class PopUp : MonoBehaviour
         if (popupRoot == null)
             popupRoot = gameObject;
 
-        // S'assurer que la popup est cachée au démarrage si vous voulez ce comportement.
-        // Si vous préférez visible au start, désactivez cette ligne et activez le GameObject dans l'éditeur.
+
         if (popupRoot != null && popupRoot.activeSelf)
             popupRoot.SetActive(false);
 
-        // Si aucun Canvas assigné, tenter de trouver un Canvas parent
         if (parentCanvas == null && popupRoot != null)
             parentCanvas = popupRoot.GetComponentInParent<Canvas>();
     }
 
-    /// <summary>
-    /// Méthode pour assigner au bouton OnClick : toggle (affiche/masque).
-    /// </summary>
+
     public void OnToggleButtonClicked()
     {
         Toggle();
     }
 
-    /// <summary>
-    /// Basculer l'état visible / caché.
-    /// </summary>
+
     public void Toggle()
     {
         if (IsVisible())
@@ -71,9 +65,7 @@ public class PopUp : MonoBehaviour
             Show();
     }
 
-    /// <summary>
-    /// Affiche la popup. Si content != null, remplace le texte avant d'afficher.
-    /// </summary>
+
     public void Show(string content = null)
     {
         if (popupRoot == null) return;
@@ -81,7 +73,6 @@ public class PopUp : MonoBehaviour
         if (!string.IsNullOrEmpty(content) && contentText != null)
             contentText.text = content;
 
-        // Si demandé, s'assurer que le popup est enfant direct du Canvas (évite LayoutGroups qui repositionnent)
         if (moveToRootCanvas)
         {
             if (parentCanvas == null)
@@ -93,18 +84,14 @@ public class PopUp : MonoBehaviour
             }
         }
 
-        // Activer d'abord pour que les Layout/Rect soient calculés
         popupRoot.SetActive(true);
 
-        // Forcer mise à jour des layouts afin que la taille réelle soit disponible avant le centrage
         Canvas.ForceUpdateCanvases();
 
         if (scrollRect != null)
         {
-            // S'assurer que le ScrollRect est activé
             if (!scrollRect.enabled) scrollRect.enabled = true;
 
-            // Si un scrollbar vertical existe, forcer son affichage et son interactivité
             if (scrollRect.verticalScrollbar != null)
             {
                 scrollRect.verticalScrollbar.gameObject.SetActive(true);
@@ -124,7 +111,6 @@ public class PopUp : MonoBehaviour
             scrollRect.verticalNormalizedPosition = 1f;
         }
 
-        // Si besoin, ajouter/activer un Canvas sur le popup pour forcer rendu au-dessus
         if (forceOverrideCanvas)
         {
             var c = popupRoot.GetComponent<Canvas>();
@@ -134,12 +120,10 @@ public class PopUp : MonoBehaviour
             c.overrideSorting = true;
             c.sortingOrder = popupSortingOrder;
 
-            // Optionnel : s'assurer qu'il y a un GraphicRaycaster si interaction nécessaire
             if (popupRoot.GetComponent<GraphicRaycaster>() == null)
                 popupRoot.AddComponent<GraphicRaycaster>();
         }
 
-        // Si un closeButton est fourni, lui ajouter/activer un Canvas avec sorting supérieur
         if (closeButton != null)
         {
             var closeCanvas = closeButton.GetComponent<Canvas>();
@@ -149,7 +133,6 @@ public class PopUp : MonoBehaviour
             closeCanvas.overrideSorting = true;
             closeCanvas.sortingOrder = popupSortingOrder + closeButtonSortingOffset;
 
-            // s'assurer que le bouton est visible au-dessus (optionnel: ajouter GraphicRaycaster si nécessaire)
             if (closeButton.GetComponent<GraphicRaycaster>() == null)
                 closeButton.AddComponent<GraphicRaycaster>();
         }
@@ -157,7 +140,6 @@ public class PopUp : MonoBehaviour
         if (centerOnShow)
             CenterPopup();
 
-        // s'assurer que le popup est au-dessus dans la hiérarchie UI
         var rt = popupRoot.GetComponent<RectTransform>();
         if (rt != null)
             rt.SetAsLastSibling();
@@ -165,27 +147,20 @@ public class PopUp : MonoBehaviour
             popupRoot.transform.SetAsLastSibling();
     }
 
-    /// <summary>
-    /// Masque la popup.
-    /// </summary>
+
     public void Hide()
     {
         if (popupRoot == null) return;
         popupRoot.SetActive(false);
     }
 
-    /// <summary>
-    /// Définit le texte du contenu sans ouvrir la popup.
-    /// </summary>
     public void SetContent(string content)
     {
         if (contentText != null)
             contentText.text = content;
     }
 
-    /// <summary>
-    /// Renvoie si la popup est affichée.
-    /// </summary>
+
     public bool IsVisible()
     {
         return popupRoot != null && popupRoot.activeSelf;

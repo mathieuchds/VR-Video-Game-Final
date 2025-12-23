@@ -98,7 +98,6 @@ public class LanternSpawn : MonoBehaviour
         {
             if (child == null) continue;
 
-            // Vérifier si déjà remplacé avec la bonne catégorie
             SpawnedLantern existingMarker = child.GetComponent<SpawnedLantern>();
             var selection = SelectReplacementPrefab(level);
             GameObject replacementPrefab = selection.prefab;
@@ -110,21 +109,17 @@ public class LanternSpawn : MonoBehaviour
                 continue;
             }
 
-            // Si déjà la bonne catégorie, on ne remplace pas
             if (existingMarker != null && existingMarker.category == desiredCategory)
             {
                 continue;
             }
 
-            // Sauvegarder les infos de position/rotation
             Vector3 originalPos = child.position;
             Quaternion originalRot = child.rotation;
             int siblingIndex = child.GetSiblingIndex();
 
-            // Recherche du sol sous la position actuelle
             bool groundFound = TryGetGroundYUnderPosition(originalPos, out float groundY);
 
-            // Instancier le nouveau prefab
             Vector3 spawnPos = originalPos + Vector3.up * 1f;
             Quaternion yaw = Quaternion.Euler(0f, originalRot.eulerAngles.y, 0f);
             Quaternion prefabRot = replacementPrefab.transform.rotation;
@@ -134,13 +129,10 @@ public class LanternSpawn : MonoBehaviour
             newObj.transform.localScale = replacementPrefab.transform.localScale;
             newObj.name = $"spawned.{desiredCategory}.{replacementPrefab.name}";
 
-            // Remettre à la même position dans la hiérarchie
             newObj.transform.SetSiblingIndex(siblingIndex);
 
-            // Calculer le point le plus bas du prefab instancié
             float lowestWorldY = GetLowestWorldY(newObj);
 
-            // Alignement au sol
             bool snapped = false;
             if (groundFound)
             {
@@ -151,7 +143,6 @@ public class LanternSpawn : MonoBehaviour
             }
             else
             {
-                // Fallback : raycast depuis hauteur au-dessus
                 Vector3 rayStart = originalPos + Vector3.up * maxRayHeight;
                 float maxDist = maxRayHeight * 2f;
                 RaycastHit chosenHit = new RaycastHit();
@@ -217,7 +208,6 @@ public class LanternSpawn : MonoBehaviour
             var marker = newObj.AddComponent<SpawnedLantern>();
             marker.category = desiredCategory;
 
-            // Détruire l'ancien enfant
             Destroy(child.gameObject);
         }
     }

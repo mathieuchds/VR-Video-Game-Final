@@ -5,7 +5,6 @@ using UnityEngine;
 public class DecoSpawn : MonoBehaviour
 {
     [Header("Objet parent contenant les décorations")]
-    [Tooltip("Tous les enfants de cet objet seront remplacés selon le niveau")]
     [SerializeField] private GameObject decorationsParent = null;
 
     [Header("Prefabs (glisser-déposer)")]
@@ -110,21 +109,17 @@ public class DecoSpawn : MonoBehaviour
                 continue;
             }
 
-            // Si déjà la bonne catégorie, on ne remplace pas
             if (existingMarker != null && existingMarker.category == desiredCategory)
             {
                 continue;
             }
 
-            // Sauvegarder les infos de position/rotation
             Vector3 originalPos = child.position;
             Quaternion originalRot = child.rotation;
             int siblingIndex = child.GetSiblingIndex();
 
-            // Recherche du sol sous la position actuelle
             bool groundFound = TryGetGroundYUnderPosition(originalPos, out float groundY);
 
-            // Instancier le nouveau prefab
             Vector3 spawnPos = originalPos + Vector3.up * 1f;
             Quaternion yaw = Quaternion.Euler(0f, originalRot.eulerAngles.y, 0f);
             Quaternion prefabRot = replacementPrefab.transform.rotation;
@@ -134,13 +129,10 @@ public class DecoSpawn : MonoBehaviour
             newObj.transform.localScale = replacementPrefab.transform.localScale;
             newObj.name = $"spawned.{desiredCategory}.{replacementPrefab.name}";
 
-            // Remettre à la même position dans la hiérarchie
             newObj.transform.SetSiblingIndex(siblingIndex);
 
-            // Calculer le point le plus bas du prefab instancié
             float lowestWorldY = GetLowestWorldY(newObj);
 
-            // Alignement au sol
             bool snapped = false;
             if (groundFound)
             {
@@ -151,7 +143,6 @@ public class DecoSpawn : MonoBehaviour
             }
             else
             {
-                // Fallback : raycast depuis hauteur au-dessus
                 Vector3 rayStart = originalPos + Vector3.up * maxRayHeight;
                 float maxDist = maxRayHeight * 2f;
                 RaycastHit chosenHit = new RaycastHit();
@@ -197,7 +188,6 @@ public class DecoSpawn : MonoBehaviour
                 }
             }
 
-            // Appliquer les décalages supplémentaires
             if (additionalDownOffset > 0f)
             {
                 newObj.transform.position += Vector3.down * additionalDownOffset;
@@ -213,11 +203,9 @@ public class DecoSpawn : MonoBehaviour
                 Debug.LogWarning($"[DecoSpawn] Aucun sol détecté sous '{replacementPrefab.name}'. Assigne 'groundRoot' ou règle 'groundMask'.");
             }
 
-            // Marquer comme spawned
             var marker = newObj.AddComponent<SpawnedDeco>();
             marker.category = desiredCategory;
 
-            // Détruire l'ancien enfant
             Destroy(child.gameObject);
         }
     }

@@ -10,7 +10,6 @@ public class Ghost : Enemy
     private Transform target;
 
     [Header("Paramètres de Mouvement")]
-    // Utilise maintenant `speed` hérité de `Enemy` (public) pour éviter plusieurs sources de vérité
     [SerializeField] private float floatHeight = 1.5f;
     [SerializeField] private float floatAmplitude = 0.3f;
     [SerializeField] private float floatFrequency = 1f;
@@ -36,13 +35,12 @@ public class Ghost : Enemy
     [Header("Zone de Dégâts Visuelle")]
     [SerializeField] private Color damageZoneColor = new Color(1f, 0.3f, 0.1f);
     [SerializeField] private float lightIntensity = 3f;
-    [SerializeField] private GameObject burnZonePrefab; // prefab circulaire à passer depuis l'inspector
+    [SerializeField] private GameObject burnZonePrefab; 
     private GameObject burnZoneInstance;
 
     private Light damageLight;
     private float floatOffset;
 
-    // local renderer/colour pour visual (on initialise aussi ici)
     private Renderer rendLocal;
     private Color baseColorLocal;
 
@@ -63,7 +61,6 @@ public class Ghost : Enemy
         health = maxHealth;
         if (healthBar != null) healthBar.SetHealth(1f);
 
-        // --- Résolution DU JOUEUR PAR TAG (PRIORITAIRE) ---
         var playerGO = GameObject.FindGameObjectWithTag("Player");
         if (playerGO != null)
         {
@@ -83,13 +80,9 @@ public class Ghost : Enemy
                 target = targetObject.transform;
                 if (debugShowImpactRect) Debug.Log($"[Ghost:{name}] Player pris depuis targetObject: {targetObject.name}");
             }
-            else
-            {
-                Debug.LogWarning($"[Ghost:{name}] Aucun Player trouvé (tag 'Player' manquant ou Player inactif). Le Ghost attendra.");
-            }
+            
         }
 
-        // Light / VFX init
         damageLight = GetComponent<Light>();
         if (damageLight != null)
         {
@@ -100,11 +93,9 @@ public class Ghost : Enemy
             damageLight.shadows = LightShadows.None;
         }
 
-        // Renderer local
         rendLocal = GetComponent<Renderer>() ?? GetComponentInChildren<Renderer>();
         if (rendLocal != null) baseColorLocal = rendLocal.material.color;
 
-        // Forcer collider trigger + rb kinematic pour éviter de pousser le joueur
         Collider col = GetComponent<Collider>() ?? GetComponentInChildren<Collider>();
         if (col != null)
         {
@@ -127,7 +118,6 @@ public class Ghost : Enemy
 
         floatOffset = Random.Range(0f, Mathf.PI * 2f);
 
-        // initial orbit angle
         if (target != null)
         {
             Vector3 toGhost = transform.position - target.position;
@@ -137,47 +127,12 @@ public class Ghost : Enemy
         {
             orbitAngle = Random.Range(0f, Mathf.PI * 2f);
         }
-
-        // ❌ DÉSACTIVÉ : instantiate burn zone visual
-        /*
-        if (burnZonePrefab != null)
-        {
-            burnZoneInstance = Instantiate(burnZonePrefab, transform.position, Quaternion.identity, transform);
-            burnZoneInstance.SetActive(true);
-            burnZoneInstance.transform.localScale = Vector3.one * (damageRadius * 2f);
-
-            // ensure prefab contains either renderer or particle system
-            bool hasVisible = false;
-            var particles = burnZoneInstance.GetComponentsInChildren<ParticleSystem>(true);
-            if (particles != null && particles.Length > 0) hasVisible = true;
-
-            var rends = burnZoneInstance.GetComponentsInChildren<Renderer>(true);
-            if (rends != null && rends.Length > 0) hasVisible = true;
-
-            if (!hasVisible)
-                Debug.LogWarning($"[Ghost:{name}] burnZonePrefab ne contient ni ParticleSystem ni Renderer visible. Vérifie le prefab.");
-
-            foreach (var ps in particles)
-            {
-                if (ps == null) continue;
-                var main = ps.main;
-                main.loop = true;
-                main.playOnAwake = true;
-                main.stopAction = ParticleSystemStopAction.None;
-                var emission = ps.emission;
-                emission.enabled = true;
-                if (!ps.isPlaying) ps.Play(true);
-            }
-
-            if (debugShowImpactRect) Debug.Log($"[Ghost:{name}] burnZoneInstance instancié et lancé.");
-        }
-        */
         
     }
 
     void Update()
     {
-        // si on n'a pas encore de target, tenter de la trouver chaque frame (utile si le joueur spawn après les fantômes)
+        // si on n'a pas encore de target, tenter de la trouver chaque frame
         if (target == null)
         {
             var playerGO = GameObject.FindGameObjectWithTag("Player");
@@ -214,25 +169,21 @@ public class Ghost : Enemy
         float floatY = Mathf.Sin(Time.time * floatFrequency + floatOffset) * floatAmplitude;
         Vector3 desiredPos = targetGround + orbitOffset + Vector3.up * (floatHeight + floatY);
 
-        // Ensure minimal horizontal separation (avoid "sticking" into the player)
         Vector3 horizontalDesired = new Vector3(desiredPos.x, 0f, desiredPos.z);
         Vector3 horizontalTarget = new Vector3(target.position.x, 0f, target.position.z);
         float horizDist = Vector3.Distance(horizontalDesired, horizontalTarget);
         if (horizDist < minSeparation)
         {
-            // push desiredPos outwards along direction from player
             Vector3 dirOut = (horizontalDesired - horizontalTarget).normalized;
             if (dirOut.sqrMagnitude < 0.0001f) dirOut = Vector3.right;
             horizontalDesired = horizontalTarget + dirOut * minSeparation;
             desiredPos = new Vector3(horizontalDesired.x, desiredPos.y, horizontalDesired.z);
         }
 
-        // interpolation, clamp pour stabiliser — utilise `speed` hérité d'Enemy
         transform.position = Vector3.Lerp(transform.position, desiredPos, Mathf.Clamp01(speed * Time.deltaTime));
 
         transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
 
-        // ❌ DÉSACTIVÉ : UpdateBurnZone();
         CheckDamageZone();
 
         if (debugVerbose)
@@ -241,64 +192,13 @@ public class Ghost : Enemy
         }
     }
 
-    // ❌ DÉSACTIVÉ : Méthode UpdateBurnZone complète
-    /*
-    private void UpdateBurnZone()
-    {
-        if (burnZoneInstance == null) return;
-
-        if (!burnZoneInstance.activeSelf)
-            burnZoneInstance.SetActive(true);
-
-        var particleSystems = burnZoneInstance.GetComponentsInChildren<ParticleSystem>(true);
-        foreach (var ps in particleSystems)
-        {
-            if (ps == null) continue;
-            if (!ps.isPlaying) ps.Play(true);
-        }
-
-        // position au sol sous le fantôme (centre des dégâts)
-        RaycastHit hit;
-        Vector3 rayOrigin = transform.position + Vector3.up * 0.5f;
-        if (Physics.Raycast(rayOrigin, Vector3.down, out hit, 10f))
-        {
-            burnZoneInstance.transform.position = hit.point + Vector3.up * 0.02f;
-            burnZoneInstance.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-        }
-        else
-        {
-            burnZoneInstance.transform.position = new Vector3(transform.position.x, transform.position.y - floatHeight, transform.position.z);
-            burnZoneInstance.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-        }
-
-        burnZoneInstance.transform.localScale = Vector3.one * (damageRadius * 2f);
-
-        // debug : dessiner cercle approximatif avec Debug.DrawLine (visible en Play)
-        if (debugShowImpactRect)
-        {
-            int steps = 24;
-            float r = damageRadius;
-            Vector3 c = burnZoneInstance.transform.position;
-            Vector3 prev = c + new Vector3(Mathf.Cos(0f) * r, 0f, Mathf.Sin(0f) * r);
-            for (int i = 1; i <= steps; i++)
-            {
-                float a = (i / (float)steps) * Mathf.PI * 2f;
-                Vector3 next = c + new Vector3(Mathf.Cos(a) * r, 0f, Mathf.Sin(a) * r);
-                Debug.DrawLine(prev + Vector3.up * 0.05f, next + Vector3.up * 0.05f, Color.red, 0.1f);
-                prev = next;
-            }
-        }
-    }
-    */
 
     private void CheckDamageZone()
     {
         if (Time.time < nextDamageTime) return;
 
-        // centre des dégâts = position du fantôme (burnZone désactivé)
         Vector3 center = transform.position;
 
-        // --- ignorer la hauteur -> distance calculée en XZ (plan horizontal) ---
         if (target != null)
         {
             Vector3 delta = target.position - center;
@@ -309,21 +209,16 @@ public class Ghost : Enemy
 
             if (distXZ <= damageRadius)
             {
-                // ✅ CORRECTION : Recherche plus robuste de PlayerStats
                 PlayerStats ps = null;
                 
-                // Méthode 1 : Sur le GameObject même
                 ps = target.GetComponent<PlayerStats>();
                 
-                // Méthode 2 : Sur le parent
                 if (ps == null)
                     ps = target.GetComponentInParent<PlayerStats>();
                 
-                // Méthode 3 : Sur les enfants
                 if (ps == null)
                     ps = target.GetComponentInChildren<PlayerStats>();
                 
-                // Méthode 4 : Recherche globale par tag
                 if (ps == null)
                 {
                     GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
@@ -331,7 +226,6 @@ public class Ghost : Enemy
                         ps = playerGO.GetComponent<PlayerStats>();
                 }
                 
-                // Méthode 5 : Recherche globale par type (fallback ultime)
                 if (ps == null)
                 {
                     ps = FindObjectOfType<PlayerStats>();
@@ -345,12 +239,12 @@ public class Ghost : Enemy
                     nextDamageTime = Time.time + damageInterval;
 
                     if (debugShowImpactRect)
-                        Debug.Log($"[Ghost:{name}] ✅ Applied RAW {damageAmount:F2} damage to {ps.gameObject.name} (distXZ={distXZ:F2})");
+                        Debug.Log($"[Ghost:{name}] Applied RAW {damageAmount:F2} damage to {ps.gameObject.name} (distXZ={distXZ:F2})");
                 }
                 else
                 {
                     if (debugShowImpactRect)
-                        Debug.LogError($"[Ghost:{name}] ❌ PlayerStats introuvable sur target '{target.name}' ni ailleurs ! Vérifiez que PlayerStats est bien attaché au joueur.");
+                        Debug.LogError($"[Ghost:{name}] PlayerStats introuvable sur target '{target.name}' ni ailleurs ! Vérifiez que PlayerStats est bien attaché au joueur.");
                 }
 
                 return;
@@ -362,7 +256,6 @@ public class Ghost : Enemy
             }
         }
 
-        // fallback: legacy OverlapSphere scan (keeps previous behaviour for non-target players)
         Collider[] hitColliders = Physics.OverlapSphere(center, damageRadius);
         if (debugShowImpactRect)
         {
@@ -402,69 +295,34 @@ public class Ghost : Enemy
         else
         {
             if (debugShowImpactRect)
-                Debug.Log($"[Ghost:{name}] Aucun joueur touché — vérifie Tag 'Player', Collider et Layer Collision Matrix.");
+                Debug.Log($"[Ghost:{name}] Aucun joueur touché vérifie Tag 'Player', Collider et Layer Collision Matrix.");
         }
     }
 
-    // On empêche le contact damage hérité d'empiler en définissant un message vide
     private new void OnTriggerEnter(Collider other)
     {
-        // Vérifier si c'est le joueur qui entre dans la zone
         if (other.CompareTag("Player"))
         {
             if (debugShowImpactRect)
-                Debug.Log($"[Ghost:{name}] 👻 Player entered trigger zone!");
+                Debug.Log($"[Ghost:{name}] Player entered trigger zone!");
             
             // On ne fait rien ici car CheckDamageZone() dans Update() gère déjà les dégâts périodiques
-            // Mais on peut ajouter un effet visuel ou sonore ici si besoin
         }
     }
 
-    // ✅ NOUVEAU : Détecter quand le joueur sort de la zone
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             if (debugShowImpactRect)
-                Debug.Log($"[Ghost:{name}] 👋 Player left trigger zone");
+                Debug.Log($"[Ghost:{name}] Player left trigger zone");
         }
     }
-
-    // ❌ DÉSACTIVÉ : Appliquer les dégâts dans OnTriggerStay (gère déjà dans CheckDamageZone)
-    /*
-    private void OnTriggerStay(Collider other)
-    {
-        if (!other.CompareTag("Player")) return;
-        
-        // Vérifier le cooldown des dégâts
-        if (Time.time < nextDamageTime) return;
-        
-        // Rechercher PlayerStats
-        PlayerStats ps = other.GetComponent<PlayerStats>() 
-                      ?? other.GetComponentInParent<PlayerStats>() 
-                      ?? other.GetComponentInChildren<PlayerStats>();
-        
-        if (ps != null)
-        {
-            ps.ApplyRawDamage(damageAmount);
-            nextDamageTime = Time.time + damageInterval;
-            
-            if (debugShowImpactRect)
-                Debug.Log($"[Ghost:{name}] ✅ Applied {damageAmount:F2} damage via OnTriggerStay");
-        }
-        else
-        {
-            if (debugShowImpactRect)
-                Debug.LogWarning($"[Ghost:{name}] ⚠️ PlayerStats non trouvé sur {other.gameObject.name}");
-        }
-    }
-    */
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = new Color(1f, 0f, 0f, 0.25f);
-        // ❌ MODIFIÉ : utiliser transform.position au lieu de burnZoneInstance
-        Vector3 center = transform.position; // (burnZoneInstance != null) ? burnZoneInstance.transform.position : transform.position;
+        Vector3 center = transform.position; 
         Gizmos.DrawSphere(center, damageRadius);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(center, damageRadius);
