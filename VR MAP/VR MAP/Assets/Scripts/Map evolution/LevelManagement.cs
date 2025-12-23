@@ -50,6 +50,9 @@ public class LevelManagement : MonoBehaviour
     [SerializeField] private GameObject bossPrefab;
     [SerializeField] private Transform bossSpawnPoint;
 
+    [SerializeField] private Heal healthObject;
+
+
     private bool bossSpawned = false;
 
     [Header("Debug")]
@@ -156,7 +159,7 @@ public class LevelManagement : MonoBehaviour
         {
             gameStateManager.SetWaveTransitionMode(false);
             if (debugMode)
-                Debug.Log("[LevelManagement] ✅ Canvas de jeu forcé visible au démarrage");
+                Debug.Log("[LevelManagement] Canvas de jeu forcé visible au démarrage");
         }
 
         // Afficher la transition de la vague 1 avant de commencer
@@ -182,7 +185,7 @@ public class LevelManagement : MonoBehaviour
         if (waveNumber > 1 && powerSelectionManager != null)
         {
             if (debugMode)
-                Debug.Log($"[LevelManagement] 🎁 Affichage de la sélection de pouvoir pour vague {waveNumber}");
+                Debug.Log($"[LevelManagement] Affichage de la sélection de pouvoir pour vague {waveNumber}");
 
             waitingForPowerSelection = true;
             powerSelectionManager.ShowPowerSelection();
@@ -196,7 +199,7 @@ public class LevelManagement : MonoBehaviour
             waitingForPowerSelection = false;
 
             if (debugMode)
-                Debug.Log($"[LevelManagement] ✅ Pouvoir sélectionné");
+                Debug.Log($"[LevelManagement] Pouvoir sélectionné");
         }
 
         if (debugMode)
@@ -213,7 +216,7 @@ public class LevelManagement : MonoBehaviour
     private IEnumerator ShowWaveTransition(int waveNumber)
     {
         if (debugMode)
-            Debug.Log($"[LevelManagement] 🎬 Affichage transition vague {waveNumber}");
+            Debug.Log($"[LevelManagement] Affichage transition vague {waveNumber}");
 
         // Activer le canvas de transition
         if (waveTransitionCanvas != null)
@@ -267,7 +270,7 @@ public class LevelManagement : MonoBehaviour
         HashSet<GameObject> stunnedEnemies = new HashSet<GameObject>();
 
         if (debugMode)
-            Debug.Log($"[LevelManagement] 🥶 Début du stun de masse (durée: {duration}s)");
+            Debug.Log($"[LevelManagement] Début du stun de masse (durée: {duration}s)");
 
         while (elapsed < duration)
         {
@@ -293,7 +296,7 @@ public class LevelManagement : MonoBehaviour
                         newlyStunned++;
 
                         if (debugMode)
-                            Debug.Log($"[LevelManagement]   🥶 Stun appliqué à '{enemyObj.name}' pour {remainingDuration:F1}s");
+                            Debug.Log($"[LevelManagement] Stun appliqué à '{enemyObj.name}' pour {remainingDuration:F1}s");
                     }
                 }
             }
@@ -638,6 +641,7 @@ public class LevelManagement : MonoBehaviour
 
         if (debugMode)
             Debug.Log($"[LevelManagement] === VAGUE {currentWave} COMPLÉTÉE ===\n  Ennemis tués: {enemiesKilledThisWave}");
+        healthObject.ActivateRandom();
 
         if (currentWave >= maxWave)
         {

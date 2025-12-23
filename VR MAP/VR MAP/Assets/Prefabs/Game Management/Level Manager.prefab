@@ -47,6 +47,7 @@ MonoBehaviour:
   levelData: {fileID: 0}
   gameStateManager: {fileID: 0}
   seasonalSpawnManager: {fileID: 0}
+  powerSelectionManager: {fileID: 0}
   spawnerPrefabHalloween: {fileID: 3998186714802536193, guid: f080dc77339d6464f92cb0dd49387951, type: 3}
   spawnerPrefabWinter: {fileID: 2064881547654939525, guid: 5b54e72f569c95d4f87d5c0c72154bb4, type: 3}
   spawnerPrefabHalloweenMiniboss: {fileID: 0}
@@ -57,6 +58,10 @@ MonoBehaviour:
   enemyTag: Enemy
   maxWave: 10
   checkDelay: 2
+  waveTransitionDuration: 3
+  waveTransitionCanvas: {fileID: 0}
+  waveNumberText: {fileID: 0}
   bossPrefab: {fileID: 937288432677411039, guid: e0d120234746a76439bee5f0fe3c44c3, type: 3}
   bossSpawnPoint: {fileID: 0}
+  healthObject: {fileID: 0}
   debugMode: 0
