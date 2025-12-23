@@ -2149,16 +2149,16 @@ MonoBehaviour:
   animator: {fileID: 0}
   outerCircleRadius: 15
   innerCircleRadius: 5
-  normalSpeed: 6
-  dashSpeed: 25
+  normalSpeed: 4
+  dashSpeed: 20
   flyHeight: 3
-  dashDamage: 15
-  chillDuration: 1.5
+  dashDamage: 10
+  chillDuration: 2.5
   dashHitRadius: 1.5
   dashHeightOffset: 0.5
   dashCooldown: 3
   dashPreparationTime: 0.5
-  showDebugGizmos: 1
+  showDebugGizmos: 0
 --- !u!136 &1068934705509953196
 CapsuleCollider:
   m_ObjectHideFlags: 0

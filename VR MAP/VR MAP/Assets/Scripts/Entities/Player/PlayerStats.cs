@@ -34,7 +34,7 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] public float speedBoostDuration = 3f;
 
     [Header("Bomba")]
-    [SerializeField] public float explosionRadius = 3f;
+    [SerializeField] public float explosionRadius = 10f;
     [SerializeField] public float explosionDamage = 20f;
 
     [Header("FlameThrower")]

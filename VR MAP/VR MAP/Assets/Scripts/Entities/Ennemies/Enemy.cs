@@ -70,6 +70,12 @@ public class Enemy : MonoBehaviour
 
         rend = GetComponent<Renderer>();
         if (rend != null) baseColor = rend.material.color;
+
+        // ✅ NOUVEAU : Ajouter le composant OutOfBoundsChecker si absent
+        if (GetComponent<EnemyOutOfBoundsChecker>() == null)
+        {
+            gameObject.AddComponent<EnemyOutOfBoundsChecker>();
+        }
     }
 
     void Update()

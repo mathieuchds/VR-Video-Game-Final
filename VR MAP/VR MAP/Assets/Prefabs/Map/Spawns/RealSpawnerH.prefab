@@ -48,7 +48,7 @@ MonoBehaviour:
   spawnerType: 0
   mobPrefabs:
   - {fileID: 8747757470087523455, guid: 9690126558f4862478df85ea898bc332, type: 3}
-  - {fileID: 1248815240492774, guid: 0d951fde96e634540b8b2e6e24760ff1, type: 3}
+  - {fileID: 7962199819078159310, guid: 89cdde8f7ea0c424b9967b22183da507, type: 3}
   - {fileID: 9061928882406066884, guid: a5cd9e2dda9cd37469157cba354c1148, type: 3}
   waves:
   - count0: 2
@@ -59,38 +59,38 @@ MonoBehaviour:
     count1: 1
     count2: 0
     interval: 4
-  - count0: 3
+  - count0: 2
     count1: 2
     count2: 1
     interval: 7
-  - count0: 3
-    count1: 3
-    count2: 2
+  - count0: 2
+    count1: 2
+    count2: 1
     interval: 7
+  - count0: 2
+    count1: 2
+    count2: 1
+    interval: 9
+  - count0: 3
+    count1: 2
+    count2: 1
+    interval: 9
+  - count0: 3
+    count1: 2
+    count2: 1
+    interval: 9
+  - count0: 3
+    count1: 2
+    count2: 1
+    interval: 15
   - count0: 3
     count1: 3
-    count2: 3
-    interval: 8
+    count2: 1
+    interval: 15
   - count0: 3
     count1: 3
-    count2: 3
-    interval: 8
-  - count0: 3
-    count1: 3
-    count2: 3
-    interval: 9
-  - count0: 4
-    count1: 3
-    count2: 3
-    interval: 9
-  - count0: 4
-    count1: 3
-    count2: 3
-    interval: 9
-  - count0: 4
-    count1: 3
-    count2: 3
-    interval: 9
+    count2: 1
+    interval: 20
   minibossStats:
     healthMultiplier: 3
     damageMultiplier: 2

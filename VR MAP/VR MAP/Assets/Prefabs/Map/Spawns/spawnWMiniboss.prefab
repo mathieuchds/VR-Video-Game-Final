@@ -28,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9179937719461156621}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 49.4394, y: -3.413823, z: -58.028687}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
@@ -124,9 +124,9 @@ MonoBehaviour:
   seasonType: 1
   spawnerType: 1
   mobPrefabs:
-  - {fileID: 3348044503055830448, guid: 0a6163620fa77594eac385b43f326d68, type: 3}
-  - {fileID: 3348044503055830448, guid: 91dddc341dc9cab4b95a75be037d1a63, type: 3}
-  - {fileID: 3348044503055830448, guid: 5af07f7d32404484d87f771858100de4, type: 3}
+  - {fileID: 7962199819078159310, guid: 89cdde8f7ea0c424b9967b22183da507, type: 3}
+  - {fileID: 2584641278423287903, guid: 725841fae4bc2c24b8bdb51284ad1330, type: 3}
+  - {fileID: 7962199819078159310, guid: 89cdde8f7ea0c424b9967b22183da507, type: 3}
   waves:
   - count0: 0
     count1: 0
@@ -175,6 +175,7 @@ MonoBehaviour:
   minInterval: 0.05
   countGrowthPerExtraWave: 1.15
   intervalReductionPerWave: 0.05
+  intervalVariability: 0.5
   onWaveCompleted:
     m_PersistentCalls:
       m_Calls: []

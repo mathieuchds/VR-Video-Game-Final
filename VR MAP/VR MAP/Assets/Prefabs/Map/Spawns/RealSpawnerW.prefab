@@ -74,23 +74,23 @@ MonoBehaviour:
   - count0: 2
     count1: 0
     count2: 0
-    interval: 2
+    interval: 10
   - count0: 2
     count1: 1
     count2: 0
-    interval: 2
+    interval: 10
   - count0: 2
     count1: 2
     count2: 1
-    interval: 2
+    interval: 10
+  - count0: 2
+    count1: 2
+    count2: 1
+    interval: 15
   - count0: 2
     count1: 2
     count2: 2
-    interval: 2
-  - count0: 3
-    count1: 3
-    count2: 3
-    interval: 2
+    interval: 15
   minibossStats:
     healthMultiplier: 3
     damageMultiplier: 2
@@ -98,6 +98,7 @@ MonoBehaviour:
   minInterval: 0.05
   countGrowthPerExtraWave: 1.15
   intervalReductionPerWave: 0.05
+  intervalVariability: 0.5
   onWaveCompleted:
     m_PersistentCalls:
       m_Calls: []

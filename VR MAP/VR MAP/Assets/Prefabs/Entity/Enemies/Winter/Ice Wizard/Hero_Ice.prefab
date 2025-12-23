@@ -1273,15 +1273,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthBar: {fileID: 6514162702450937472}
-  maxHealth: 50
-  health: 50
+  maxHealth: 130
+  health: 130
   contactDamage: 10
-  speed: 3
+  speed: 1
   flashTime: 0.5
   isStunned: 0
+  isSlowed: 0
   rb: {fileID: 0}
   spawner: {fileID: 0}
-  flameEffectPrefab: {fileID: 197962, guid: c1f1c6a173fc5a34aae675702b69445a, type: 3}
+  flameEffectPrefab: {fileID: 1053144852451064, guid: 616b8784f30afc54fbf798e164ae5541, type: 3}
+  flameScale: 2
+  poisonEffectPrefab: {fileID: 1178894326743412, guid: e00df870531e4e041a735f760d213552, type: 3}
+  poisonScale: 0.5
+  slowEffectPrefab: {fileID: 1610329445802310, guid: 8553577d8c8821f43a74b2d0921845fd, type: 3}
+  slowScale: 0.8
   targetObject: {fileID: 0}
   firePoint: {fileID: 4970659621282731764}
   animator: {fileID: 930657114159246376}

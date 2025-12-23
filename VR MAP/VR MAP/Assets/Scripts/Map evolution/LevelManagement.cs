@@ -641,7 +641,6 @@ public class LevelManagement : MonoBehaviour
 
         if (debugMode)
             Debug.Log($"[LevelManagement] === VAGUE {currentWave} COMPLÉTÉE ===\n  Ennemis tués: {enemiesKilledThisWave}");
-        healthObject.ActivateRandom();
 
         if (currentWave >= maxWave)
         {

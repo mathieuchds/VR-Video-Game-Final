@@ -152,6 +152,9 @@ public class GameStateManager : MonoBehaviour
 
         LogDebug($"[GameStateManager] ===== CHANGEMENT D'ÉTAT: {previousState} → {newState} =====");
 
+        // ✅ Gérer le temps du jeu selon l'état
+        UpdateTimeScale(newState);
+
         // Déclencher l'événement de changement d'état AVANT les mises à jour
         OnStateChanged?.Invoke(previousState, newState);
 
@@ -171,76 +174,27 @@ public class GameStateManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Active les GameObjects dans l'ordre : Scene Manager → Power Up Manager → Player
+    /// ✅ NOUVEAU : Gère le Time.timeScale selon l'état du jeu
     /// </summary>
-    private IEnumerator ActivateGameObjectsSequentially()
+    private void UpdateTimeScale(GameState newState)
     {
-        bool shouldActivate = currentState == GameState.Game;
-
-        if (shouldActivate)
+        switch (newState)
         {
-            LogDebug("[GameStateManager] Activation séquentielle des GameObjects...");
+            case GameState.Menu:
+                Time.timeScale = 1f; // Temps normal au menu
+                LogDebug("[GameStateManager] ⏰ Time.timeScale = 1 (Menu)");
+                break;
 
-            // 1. Activer le Scene Manager (gestion des spawns)
-            if (sceneManager != null)
-            {
-                sceneManager.SetActive(true);
-                LogDebug($"[GameStateManager] ✓ Scene Manager activé: {sceneManager.name}");
-                yield return null; // Attendre une frame
-            }
+            case GameState.Game:
+                Time.timeScale = 1f; // Temps normal en jeu
+                LogDebug("[GameStateManager] ⏰ Time.timeScale = 1 (Game)");
+                break;
 
-            // 2. Activer le Power Up Manager
-            if (powerUpManager != null)
-            {
-                powerUpManager.SetActive(true);
-                LogDebug($"[GameStateManager] ✓ Power Up Manager activé: {powerUpManager.name}");
-                yield return null; // Attendre une frame
-            }
-
-            // 3. Activer le joueur en dernier
-            if (player != null)
-            {
-                player.SetActive(true);
-                LogDebug($"[GameStateManager] ✓ Joueur activé: {player.name}");
-                
-                // ✅ CORRECTION : Reset APRÈS activation (pour que Start() soit appelé)
-                yield return null; // Attendre que Start() du joueur soit exécuté
-                ResetPlayer();
-            }
-
-            LogDebug("[GameStateManager] Activation séquentielle terminée !");
+            case GameState.GameOver:
+                Time.timeScale = 0f; // ✅ ARRÊT IMMÉDIAT DU TEMPS
+                LogDebug("[GameStateManager] ⏰ Time.timeScale = 0 (GameOver - PAUSE)");
+                break;
         }
-        else
-        {
-            if (menuCamera != null)
-                menuCamera.enabled = true;
-
-            UpdateCameraState();
-
-            if (player != null) player.SetActive(false);
-            if (powerUpManager != null) powerUpManager.SetActive(false);
-            if (sceneManager != null) sceneManager.SetActive(false);
-        }
-    }
-
-    /// <summary>
-    /// Fonction appelée par le bouton Play du menu
-    /// Passe en mode Game
-    /// </summary>
-    public void StartGame()
-    {
-        LogDebug("[GameStateManager] StartGame() appelé");
-
-        // 1. ✅ Réinitialiser le niveau AVANT de reset les spawners
-        if (levelData != null)
-            levelData.level = 1;
-
-        // 2. Détruire tous les ennemis restants
-        CleanupEnemies();
-
-
-        // 4. Changer d'état (active le Scene Manager)
-        SetState(GameState.Game);
     }
 
     /// <summary>
@@ -250,6 +204,11 @@ public class GameStateManager : MonoBehaviour
     public void TriggerGameOver(bool playerWon)
     {
         LogDebug($"[GameStateManager] TriggerGameOver({playerWon}) appelé");
+        
+        // ✅ MODIFIÉ : Arrêter le temps IMMÉDIATEMENT avant tout le reste
+        Time.timeScale = 0f;
+        LogDebug("[GameStateManager] ⏰ TEMPS ARRÊTÉ (timeScale = 0)");
+        
         hasWon = playerWon;
         SetState(GameState.GameOver);
     }
@@ -261,6 +220,11 @@ public class GameStateManager : MonoBehaviour
     public void ReturnToMenu()
     {
         LogDebug("[GameStateManager] Retour au menu - Nettoyage avant reload");
+        
+        // ✅ NOUVEAU : Restaurer le temps avant de recharger
+        Time.timeScale = 1f;
+        LogDebug("[GameStateManager] ⏰ Temps restauré (timeScale = 1)");
+        
         CleanupBeforeSceneReload();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
@@ -272,6 +236,11 @@ public class GameStateManager : MonoBehaviour
     public void RestartGame()
     {
         LogDebug("[GameStateManager] Restart game - Nettoyage avant reload");
+        
+        // ✅ NOUVEAU : Restaurer le temps avant de recharger
+        Time.timeScale = 1f;
+        LogDebug("[GameStateManager] ⏰ Temps restauré (timeScale = 1)");
+        
         CleanupBeforeSceneReload();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
@@ -803,5 +772,77 @@ public class GameStateManager : MonoBehaviour
                     Debug.Log("[GameStateManager] Canvas de jeu réaffiché après transition");
             }
         }
+    }
+
+    /// <summary>
+    /// ✅ Active les GameObjects dans l'ordre : Scene Manager → Power Up Manager → Player
+    /// </summary>
+    private IEnumerator ActivateGameObjectsSequentially()
+    {
+        bool shouldActivate = currentState == GameState.Game;
+
+        if (shouldActivate)
+        {
+            LogDebug("[GameStateManager] Activation séquentielle des GameObjects...");
+
+            // 1. Activer le Scene Manager (gestion des spawns)
+            if (sceneManager != null)
+            {
+                sceneManager.SetActive(true);
+                LogDebug($"[GameStateManager] ✓ Scene Manager activé: {sceneManager.name}");
+                yield return null; // Attendre une frame
+            }
+
+            // 2. Activer le Power Up Manager
+            if (powerUpManager != null)
+            {
+                powerUpManager.SetActive(true);
+                LogDebug($"[GameStateManager] ✓ Power Up Manager activé: {powerUpManager.name}");
+                yield return null; // Attendre une frame
+            }
+
+            // 3. Activer le joueur en dernier
+            if (player != null)
+            {
+                player.SetActive(true);
+                LogDebug($"[GameStateManager] ✓ Joueur activé: {player.name}");
+                
+                // Reset APRÈS activation (pour que Start() soit appelé)
+                yield return null; // Attendre que Start() du joueur soit exécuté
+                ResetPlayer();
+            }
+
+            LogDebug("[GameStateManager] Activation séquentielle terminée !");
+        }
+        else
+        {
+            if (menuCamera != null)
+                menuCamera.enabled = true;
+
+            UpdateCameraState();
+
+            if (player != null) player.SetActive(false);
+            if (powerUpManager != null) powerUpManager.SetActive(false);
+            if (sceneManager != null) sceneManager.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Fonction appelée par le bouton Play du menu
+    /// Passe en mode Game
+    /// </summary>
+    public void StartGame()
+    {
+        LogDebug("[GameStateManager] StartGame() appelé");
+
+        // 1. Réinitialiser le niveau AVANT de reset les spawners
+        if (levelData != null)
+            levelData.level = 1;
+
+        // 2. Détruire tous les ennemis restants
+        CleanupEnemies();
+
+        // 3. Changer d'état (active le Scene Manager)
+        SetState(GameState.Game);
     }
 }

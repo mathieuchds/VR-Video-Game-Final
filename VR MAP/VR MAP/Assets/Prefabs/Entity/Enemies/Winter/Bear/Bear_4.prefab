@@ -1987,13 +1987,16 @@ MonoBehaviour:
   speed: 3
   flashTime: 0.1
   isStunned: 0
+  isSlowed: 0
   rb: {fileID: 0}
   spawner: {fileID: 0}
   flameEffectPrefab: {fileID: 1053144852451064, guid: 616b8784f30afc54fbf798e164ae5541, type: 3}
   flameScale: 3
-  poisonEffectPrefab: {fileID: 0}
-  poisonScale: 1.5
-  moveSpeed: 3.5
+  poisonEffectPrefab: {fileID: 1178894326743412, guid: e00df870531e4e041a735f760d213552, type: 3}
+  poisonScale: 0.5
+  slowEffectPrefab: {fileID: 1610329445802310, guid: 8553577d8c8821f43a74b2d0921845fd, type: 3}
+  slowScale: 0.8
+  moveSpeed: 2.5
   attackRange: 4
   attackCooldown: 2
   animator: {fileID: 0}
