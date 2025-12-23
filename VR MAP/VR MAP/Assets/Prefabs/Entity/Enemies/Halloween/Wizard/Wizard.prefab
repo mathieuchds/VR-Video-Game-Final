@@ -728,12 +728,18 @@ MonoBehaviour:
   maxHealth: 150
   health: 0
   contactDamage: 0
-  speed: 1
+  speed: 2
   flashTime: 0.1
   isStunned: 0
+  isSlowed: 0
   rb: {fileID: 0}
   spawner: {fileID: 0}
-  flameEffectPrefab: {fileID: 197962, guid: c1f1c6a173fc5a34aae675702b69445a, type: 3}
+  flameEffectPrefab: {fileID: 1053144852451064, guid: 616b8784f30afc54fbf798e164ae5541, type: 3}
+  flameScale: 3
+  poisonEffectPrefab: {fileID: 1178894326743412, guid: e00df870531e4e041a735f760d213552, type: 3}
+  poisonScale: 0.5
+  slowEffectPrefab: {fileID: 1610329445802310, guid: 8553577d8c8821f43a74b2d0921845fd, type: 3}
+  slowScale: 0.7
   targetObject: {fileID: 0}
   firePoint: {fileID: 2604185741585999606}
   fireballPrefab: {fileID: 7606620699271223679, guid: edb64c83a00dab64592255c2df41fbe3, type: 3}

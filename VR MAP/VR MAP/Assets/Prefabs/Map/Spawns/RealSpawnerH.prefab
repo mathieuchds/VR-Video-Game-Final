@@ -63,34 +63,34 @@ MonoBehaviour:
     count1: 2
     count2: 1
     interval: 2
-  - count0: 4
+  - count0: 3
     count1: 3
     count2: 2
     interval: 2
-  - count0: 5
-    count1: 4
+  - count0: 3
+    count1: 3
     count2: 3
     interval: 2
-  - count0: 15
-    count1: 10
-    count2: 6
-    interval: 2
-  - count0: 16
-    count1: 12
+  - count0: 3
+    count1: 3
     count2: 3
     interval: 2
-  - count0: 16
-    count1: 13
-    count2: 4
-    interval: 1
-  - count0: 17
-    count1: 13
-    count2: 5
-    interval: 1
-  - count0: 18
-    count1: 14
-    count2: 6
-    interval: 1
+  - count0: 3
+    count1: 3
+    count2: 3
+    interval: 2
+  - count0: 4
+    count1: 3
+    count2: 3
+    interval: 2
+  - count0: 4
+    count1: 3
+    count2: 3
+    interval: 2
+  - count0: 4
+    count1: 3
+    count2: 3
+    interval: 2
   minibossStats:
     healthMultiplier: 3
     damageMultiplier: 2

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,10 +10,10 @@ public class PowerSelectionManager : MonoBehaviour
     public TMP_Text[] powerTexts;
     public TMP_Text[] descriptionTexts;
 
-
     public PlayerController player;
 
     private bool canSelect = false;
+    private bool isSelectionActive = false; // ✅ NOUVEAU : Flag pour indiquer si la sélection est active
 
     private List<string> allPowerUps = new List<string>()
     {
@@ -46,6 +46,7 @@ public class PowerSelectionManager : MonoBehaviour
 
     public void ShowPowerSelection()
     {
+        isSelectionActive = true; // ✅ NOUVEAU
         Time.timeScale = 0f; // pause
         panel.SetActive(true);
         Cursor.visible = true;
@@ -63,7 +64,6 @@ public class PowerSelectionManager : MonoBehaviour
             powerButtons[i].onClick.AddListener(() => SelectPower(power));
         }
         StartCoroutine(EnableSelectionAfterDelay());
-
     }
 
     System.Collections.IEnumerator EnableSelectionAfterDelay()
@@ -71,7 +71,6 @@ public class PowerSelectionManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(0.25f);
         canSelect = true;
     }
-
 
     void SelectPower(string power)
     {
@@ -84,6 +83,15 @@ public class PowerSelectionManager : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         canSelect = false;
+        isSelectionActive = false; // ✅ NOUVEAU : Indiquer que la sélection est terminée
+    }
+
+    /// <summary>
+    /// ✅ NOUVEAU : Méthode publique pour vérifier si la sélection est active
+    /// </summary>
+    public bool IsSelectionActive()
+    {
+        return isSelectionActive;
     }
 
     List<string> GetRandomPowers(int count)
@@ -93,10 +101,7 @@ public class PowerSelectionManager : MonoBehaviour
 
         for (int i = 0; i < count; i++)
         {
-            
             int index = Random.Range(0, tempList.Count);
- 
-
             result.Add(tempList[index]);
             tempList.RemoveAt(index);
         }

@@ -7,7 +7,9 @@ public class FireBall : MonoBehaviour
     private Vector3 direction;
 
     [Header("Raycast Settings")]
-    [SerializeField] private float sphereRadius = 0.8f; // Plus gros rayon
+    [SerializeField] private float sphereRadius = 0.8f;
+    [Tooltip("Layers que la fireball peut toucher (exclure les projectiles du joueur)")]
+    [SerializeField] private LayerMask hitLayers = ~0; // Par défaut : tout
 
     private bool hasHit = false;
     private Vector3 lastPosition;
@@ -30,14 +32,20 @@ public class FireBall : MonoBehaviour
         float distanceThisFrame = speed * Time.fixedDeltaTime;
         Vector3 nextPosition = currentPosition + direction * distanceThisFrame;
 
-        // ✅ RAYCAST entre la position précédente et la prochaine position
-        // Cela garantit qu'on ne rate JAMAIS une collision
+        // ✅ RAYCAST avec LayerMask pour ignorer certains objets
         float totalDistance = Vector3.Distance(lastPosition, nextPosition);
 
         RaycastHit hit;
-        if (Physics.SphereCast(lastPosition, sphereRadius, direction, out hit, totalDistance))
+        if (Physics.SphereCast(lastPosition, sphereRadius, direction, out hit, totalDistance, hitLayers))
         {
             Debug.DrawLine(lastPosition, hit.point, Color.red, 1f);
+
+            // ✅ Ignorer les projectiles du joueur par tag
+            if (hit.collider.CompareTag("PlayerProjectile"))
+            {
+                // Ignorer et continuer
+                return;
+            }
 
             if (hit.collider.gameObject != gameObject && hit.collider.CompareTag("Player"))
             {
@@ -63,6 +71,12 @@ public class FireBall : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (hasHit || other.gameObject == gameObject) return;
+
+        // ✅ Ignorer les projectiles du joueur
+        if (other.CompareTag("PlayerProjectile"))
+        {
+            return; // Ne pas détruire la fireball
+        }
 
         if (other.CompareTag("Player"))
         {

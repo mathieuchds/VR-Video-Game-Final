@@ -1989,7 +1989,10 @@ MonoBehaviour:
   isStunned: 0
   rb: {fileID: 0}
   spawner: {fileID: 0}
-  flameEffectPrefab: {fileID: 197962, guid: c1f1c6a173fc5a34aae675702b69445a, type: 3}
+  flameEffectPrefab: {fileID: 1053144852451064, guid: 616b8784f30afc54fbf798e164ae5541, type: 3}
+  flameScale: 3
+  poisonEffectPrefab: {fileID: 0}
+  poisonScale: 1.5
   moveSpeed: 3.5
   attackRange: 4
   attackCooldown: 2

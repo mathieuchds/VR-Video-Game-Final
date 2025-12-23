@@ -432,18 +432,18 @@ MonoBehaviour:
   attackSpeed: 1.5
   defense: 5
   moveSpeed: 3
-  shockwaveRadius: 5
+  shockwaveRadius: 7
   shockwaveDamage: 20
-  stunDuration: 2
+  stunDuration: 3
   speedBoostMultiplier: 3
   speedBoostDuration: 3
   explosionRadius: 3
   explosionDamage: 20
   flameDamagePerSecond: 120
-  flameDuration: 2
+  flameDuration: 4
   poisonDamage: 30
-  poisonDuration: 3
-  iceDuration: 2
+  poisonDuration: 4
+  iceDuration: 6
   score: 0
 --- !u!114 &8614792153822923984
 MonoBehaviour:
@@ -839,7 +839,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb765a1ebc1ef7d43b131dbfd95e6df9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stunDuration: 0.2
+  slowFactor: 0.1
+  slowDuration: 2
 --- !u!1 &7810260726913989501
 GameObject:
   m_ObjectHideFlags: 0
@@ -1450,7 +1451,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb765a1ebc1ef7d43b131dbfd95e6df9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stunDuration: 0.2
+  slowFactor: 0.1
+  slowDuration: 2
 --- !u!4 &3172421018956835882 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -3128676462507729561, guid: 26353c9d95c19ae488098d950d5cc527, type: 3}

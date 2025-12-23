@@ -1,9 +1,9 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    public float damage = 10f;   // dégâts infligés
-    public float lifeTime = 3f;  // durée avant auto-destruction
+    public float damage = 10f;   // dÃ©gÃ¢ts infligÃ©s
+    public float lifeTime = 3f;  // durÃ©e avant auto-destruction
 
     public bool isPoisonous = false;
 
@@ -14,9 +14,17 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // âœ… Ignorer le joueur
         if (other.CompareTag("Player"))
             return;
 
+        // âœ… NOUVEAU : Ignorer les projectiles ennemis (fireballs)
+        if (other.CompareTag("EnemyProjectile") || other.GetComponent<FireBall>() != null)
+        {
+            return; // Traverser sans dÃ©truire le projectile
+        }
+
+        // VÃ©rifier si c'est un ennemi
         Enemy enemy = other.GetComponent<Enemy>();
 
         if (enemy != null)
@@ -27,10 +35,7 @@ public class Projectile : MonoBehaviour
                 enemy.ApplyPoison();
             }
 
+            Destroy(gameObject); // DÃ©truire uniquement si on touche un ennemi
         }
-
-        Destroy(gameObject); // disparaît après impact
-
-
     }
 }

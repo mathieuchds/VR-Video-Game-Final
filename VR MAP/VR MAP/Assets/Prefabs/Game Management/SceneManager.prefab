@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1329815525656181547}
   - component: {fileID: 5254836012281384541}
+  - component: {fileID: 4918285931217252926}
   - component: {fileID: 4112506071758453265}
   - component: {fileID: 1793516351984105593}
   - component: {fileID: 1085889846366434510}
@@ -76,6 +77,41 @@ MonoBehaviour:
   groundSnapOffset: 0
   groundPenetration: 0.05
   additionalDownOffset: 0
+--- !u!114 &4918285931217252926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7281560823030315171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c83eaaf62a0c804ebc3a4df83750c5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelData: {fileID: 4112506071758453265}
+  player: {fileID: 0}
+  rainPrefab: {fileID: 1450260908176292, guid: 431a44e889220af4e8af803d881b43d8, type: 3}
+  snowPrefab: {fileID: 1413434634010322, guid: 9eb5d4f78bb4e8f44859e23308f70361, type: 3}
+  rainStartWave: 2
+  snowStartWave: 6
+  rainMaxWave: 5
+  snowMaxWave: 10
+  rainMinDensity: 50
+  rainMaxDensity: 200
+  rainHeightAbovePlayer: 20
+  rainEffectRadius: 30
+  rainGridSize: 5
+  rainGridSpacing: 50
+  snowMinDensity: 300
+  snowMaxDensity: 500
+  snowParticleSizeMultiplier: 0.01
+  snowHeightAbovePlayer: 15
+  snowEffectRadius: 35
+  snowGridSize: 8
+  snowGridSpacing: 10
+  followPlayer: 1
+  debugMode: 0
 --- !u!114 &4112506071758453265
 MonoBehaviour:
   m_ObjectHideFlags: 0

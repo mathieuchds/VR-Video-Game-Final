@@ -1,18 +1,15 @@
-- revoir le general game manager 1
-- son 10
-- faire sorte que maria soit l'end game 2
-- pimper mariah 11
-- finir les effets sur les pouvoirs 9
+- son  
 - faire heal
+- equilibrer les degats 
+- bomba bug effet bizarre
+- gerer miniboss
+- prefab projectile personnage
+- augmentation stat naturel au debut de vague
+- augmentation stat via l'ui pouvoir
+- gerer les hitbox du decor
+- ameliorer selection de pouvoir
+- ameliorer lance flamme
+- ajouter aleatoire sur quand es ce que les mobs spawn pour pas qu'ils arrivent d'un coup
+- probleme de slow et stun à regler
+- effet visuel de stun
 
-
-- faire les UI 5
-- ciel et ambiance 8
-- finir les mobs 7
-
-
-
-- equilibrer les degats 12
-- faire un score + l'afficher 4
-- diversité des missions 13
-- faire le retry 3

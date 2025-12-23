@@ -24185,7 +24185,7 @@ GameObject:
   - component: {fileID: 4341951232330386619}
   m_Layer: 0
   m_Name: Human_Spell_Fireball_Large
-  m_TagString: Untagged
+  m_TagString: EnemyProjectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -29067,6 +29067,9 @@ MonoBehaviour:
   damage: 10
   speed: 20
   sphereRadius: 1
+  hitLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!54 &4341951232330386619
 Rigidbody:
   m_ObjectHideFlags: 0

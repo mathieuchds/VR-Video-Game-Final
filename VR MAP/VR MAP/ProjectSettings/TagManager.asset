@@ -12,6 +12,8 @@ TagManager:
   - Boss
   - Enemy
   - Cliff
+  - PlayerProjectile
+  - EnemyProjectile
   layers:
   - Default
   - TransparentFX

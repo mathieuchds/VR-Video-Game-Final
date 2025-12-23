@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 7875953024070900450}
   m_Layer: 0
   m_Name: Sphere
-  m_TagString: Untagged
+  m_TagString: PlayerProjectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -124,6 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   damage: 10
   lifeTime: 3
+  isPoisonous: 0
 --- !u!54 &7875953024070900450
 Rigidbody:
   m_ObjectHideFlags: 0

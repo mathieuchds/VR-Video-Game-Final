@@ -124,8 +124,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 0}
-  explosionRadius: 3
-  explosionDamage: 20
+  explosionRadius: 10
+  explosionDamage: 30
+  explosionVFXPrefab: {fileID: 5263261513851132598, guid: 1acb19ee20f142b4fa100bb560c68095, type: 3}
+  vfxLifetime: 2
+  baseVFXRadius: 3
 --- !u!54 &4497290153011729325
 Rigidbody:
   m_ObjectHideFlags: 0

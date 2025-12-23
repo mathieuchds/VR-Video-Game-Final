@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -46,11 +46,11 @@ public class PlayerController : MonoBehaviour
     private bool iceRayEnable = false;
 
     [Header("Cooldowns")]
-    [SerializeField] private float stunCooldown = 8f;
-    [SerializeField] private float speedBoostCooldown = 5f;
-    [SerializeField] private float bombaCooldown = 10f;
-    [SerializeField] private float flameThrowerCooldown = 10f;
-    [SerializeField] private float iceRayCooldown = 10f;
+    [SerializeField] private float stunCooldown = 5f;
+    [SerializeField] private float speedBoostCooldown = 2f;
+    [SerializeField] private float bombaCooldown = 7f;
+    [SerializeField] private float flameThrowerCooldown = 5f;
+    [SerializeField] private float iceRayCooldown = 8f;
 
     [SerializeField] private float flameThrowerDuration = 5f;
     [SerializeField] private float iceRayDuration = 5f;
@@ -125,7 +125,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                stats.stunDuration += 1f;
+                stats.stunDuration += 3f;
             }
         }
         else if (powerName == "SpeedBoost")
@@ -150,7 +150,7 @@ public class PlayerController : MonoBehaviour
             else
             {
                 stats.shockwaveDamage += 10f;
-                stats.shockwaveRadius += 1f;
+                stats.shockwaveRadius += 3f;
             }
         }
         else if (powerName == "Bomba")
@@ -163,8 +163,8 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                stats.explosionDamage += 15f;
-                stats.explosionRadius += 1f;
+                stats.explosionDamage += 30f;
+                stats.explosionRadius += 3f;
             }
         }
         else if (powerName == "FlameThrower")
@@ -177,7 +177,10 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                flameThrowerDuration += 2;
+                // ✅ MODIFIÉ : Améliorer à la fois la durée d'activation ET la durée de l'effet de brûlure
+                flameThrowerDuration += 2f;           // Durée pendant laquelle le lance-flammes est actif
+                stats.flameDuration += 1f;            // ✅ NOUVEAU : Durée de l'effet de brûlure sur l'ennemi
+                stats.flameDamagePerSecond += 6f;     // ✅ NOUVEAU : Augmenter aussi les dégâts par seconde
             }
         }
         else if (powerName == "PoisonBullets")
@@ -189,8 +192,8 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                stats.poisonDamage += 3f;
-                stats.poisonDuration += 1f;
+                stats.poisonDamage += 10f;
+                stats.poisonDuration += 2f;
             }
         }
         else if (powerName == "IceRay")
@@ -202,7 +205,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                stats.iceDuration += 1f;
+                stats.iceDuration += 3f;
             }
         }
     }
@@ -380,6 +383,38 @@ public class PlayerController : MonoBehaviour
     private void FirePressed(InputAction.CallbackContext obj)
     {
         gun.Shoot(stats.attackDamage);
+    }
+
+    private void OnDisable()
+    {
+        // Désabonner les Input Actions pour éviter les MissingReferenceException
+        if (zqsd != null && zqsd.action != null)
+        {
+            zqsd.action.Disable();
+        }
+
+        if (powerUp != null && powerUp.action != null)
+        {
+            powerUp.action.performed -= PowerUpPressed;
+            powerUp.action.Disable();
+        }
+
+        if (mouseMovement != null && mouseMovement.action != null)
+        {
+            mouseMovement.action.Disable();
+        }
+
+        if (jump != null && jump.action != null)
+        {
+            jump.action.performed -= JumpPressed;
+            jump.action.Disable();
+        }
+
+        if (fire != null && fire.action != null)
+        {
+            fire.action.performed -= FirePressed;
+            fire.action.Disable();
+        }
     }
 
     // Update is called once per frame

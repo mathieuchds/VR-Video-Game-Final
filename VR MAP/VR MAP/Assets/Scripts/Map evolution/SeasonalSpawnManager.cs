@@ -99,6 +99,7 @@ public class SeasonalSpawnManager : MonoBehaviour
 
     private void UpdateSpawnsByLevel(int level)
     {
+
         var allTransforms = UnityEngine.Object.FindObjectsOfType<Transform>();
 
         // collect markers: either by tag (configurable) or by name contains

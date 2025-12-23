@@ -156,6 +156,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3312713966151047163}
+  - {fileID: 3879712885145306564}
   - {fileID: 8747757470775160824}
   - {fileID: 8747757470043806299}
   m_Father: {fileID: 8747757470087523392}
@@ -324,18 +325,24 @@ MonoBehaviour:
   maxHealth: 200
   health: 0
   contactDamage: 1
-  speed: 0.3
+  speed: 0.15
   flashTime: 0.1
   isStunned: 0
+  isSlowed: 0
   rb: {fileID: 0}
   spawner: {fileID: 0}
-  flameEffectPrefab: {fileID: 8149814289637279443, guid: 0be142930fb141848b6a57277d63ddfc, type: 3}
+  flameEffectPrefab: {fileID: 1053144852451064, guid: 616b8784f30afc54fbf798e164ae5541, type: 3}
+  flameScale: 3
+  poisonEffectPrefab: {fileID: 1178894326743412, guid: e00df870531e4e041a735f760d213552, type: 3}
+  poisonScale: 0.5
+  slowEffectPrefab: {fileID: 1610329445802310, guid: 8553577d8c8821f43a74b2d0921845fd, type: 3}
+  slowScale: 0.7
   targetObject: {fileID: 0}
   floatHeight: 0.5
   floatAmplitude: 0.3
   floatFrequency: 1
   orbitRadius: 4.5
-  orbitSpeed: 0.3
+  orbitSpeed: 0.15
   orbitClockwise: 1
   minSeparation: 1
   damageRadius: 5
@@ -685,3 +692,65 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2386268eff9a6254abc6cdcdfa73cebb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthBar
+--- !u!1001 &5120018434497313105
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 8747757470081920750}
+    m_Modifications:
+    - target: {fileID: 8276059153529470101, guid: 2a571bdb507a7f04b91387f88d0f957f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276059153529470101, guid: 2a571bdb507a7f04b91387f88d0f957f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.327
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276059153529470101, guid: 2a571bdb507a7f04b91387f88d0f957f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276059153529470101, guid: 2a571bdb507a7f04b91387f88d0f957f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276059153529470101, guid: 2a571bdb507a7f04b91387f88d0f957f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.00000002235174
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276059153529470101, guid: 2a571bdb507a7f04b91387f88d0f957f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.0000005252659
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276059153529470101, guid: 2a571bdb507a7f04b91387f88d0f957f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.000000057465506
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276059153529470101, guid: 2a571bdb507a7f04b91387f88d0f957f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276059153529470101, guid: 2a571bdb507a7f04b91387f88d0f957f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276059153529470101, guid: 2a571bdb507a7f04b91387f88d0f957f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8644861730782453898, guid: 2a571bdb507a7f04b91387f88d0f957f, type: 3}
+      propertyPath: m_Name
+      value: Human_SpellAura_Shockwave_Ground
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2a571bdb507a7f04b91387f88d0f957f, type: 3}
+--- !u!4 &3879712885145306564 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8276059153529470101, guid: 2a571bdb507a7f04b91387f88d0f957f, type: 3}
+  m_PrefabInstance: {fileID: 5120018434497313105}
+  m_PrefabAsset: {fileID: 0}

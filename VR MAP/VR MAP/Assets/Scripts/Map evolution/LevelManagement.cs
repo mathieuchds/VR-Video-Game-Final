@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using TMPro; // Pour TextMeshPro
 
 public class LevelManagement : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class LevelManagement : MonoBehaviour
     [SerializeField] private LevelData levelData;
     [SerializeField] private GameStateManager gameStateManager;
     [SerializeField] private SeasonalSpawnManager seasonalSpawnManager;
+    [SerializeField] private PowerSelectionManager powerSelectionManager; // ✅ NOUVEAU
 
     [Header("Spawner Prefabs References")]
     [Tooltip("Prefab spawner Halloween (pour lire les WaveSetting)")]
@@ -35,7 +37,14 @@ public class LevelManagement : MonoBehaviour
     [SerializeField] private int maxWave = 10;
     [Tooltip("Délai avant de vérifier si tous les ennemis sont morts (secondes)")]
     [SerializeField] private float checkDelay = 2f;
+    [Tooltip("Durée de l'écran de transition entre les vagues (secondes)")]
+    [SerializeField] private float waveTransitionDuration = 3f;
 
+    [Header("Wave Transition UI")]
+    [Tooltip("Canvas affichant la transition de vague (fond noir + texte)")]
+    [SerializeField] private GameObject waveTransitionCanvas;
+    [Tooltip("Texte affichant le numéro de la vague (TextMeshPro recommandé)")]
+    [SerializeField] private TextMeshProUGUI waveNumberText;
 
     [Header("Boss")]
     [SerializeField] private GameObject bossPrefab;
@@ -43,11 +52,12 @@ public class LevelManagement : MonoBehaviour
 
     private bool bossSpawned = false;
 
-
     [Header("Debug")]
     [SerializeField] private bool debugMode = true;
 
     private bool isActive = false;
+    private bool isInWaveTransition = false;
+    private bool waitingForPowerSelection = false; // ✅ NOUVEAU : Flag pour la sélection de pouvoir
     private Coroutine checkCoroutine;
     
     // Compteurs pour la vague actuelle
@@ -70,6 +80,10 @@ public class LevelManagement : MonoBehaviour
         if (seasonalSpawnManager == null)
             seasonalSpawnManager = FindObjectOfType<SeasonalSpawnManager>();
 
+        // ✅ NOUVEAU : Trouver le PowerSelectionManager
+        if (powerSelectionManager == null)
+            powerSelectionManager = FindObjectOfType<PowerSelectionManager>();
+
         if (levelData == null)
             Debug.LogError("[LevelManagement] LevelData introuvable — le système de vagues ne fonctionnera pas.");
 
@@ -78,6 +92,13 @@ public class LevelManagement : MonoBehaviour
 
         if (seasonalSpawnManager == null)
             Debug.LogWarning("[LevelManagement] SeasonalSpawnManager introuvable — les totaux de marqueurs ne seront pas synchronisés.");
+
+        if (powerSelectionManager == null)
+            Debug.LogWarning("[LevelManagement] PowerSelectionManager introuvable — pas de sélection de pouvoir.");
+
+        // ✅ Masquer le canvas de transition au démarrage
+        if (waveTransitionCanvas != null)
+            waveTransitionCanvas.SetActive(false);
     }
 
     private void OnEnable()
@@ -122,20 +143,162 @@ public class LevelManagement : MonoBehaviour
         }
 
         isActive = true;
+        isInWaveTransition = false;
+        waitingForPowerSelection = false;
 
         // Réinitialiser le niveau à 1 au démarrage d'une nouvelle partie
         levelData.level = 1;
         enemiesKilledThisWave = 0;
         trackedEnemies.Clear();
 
-        // Calculer le nombre d'ennemis attendus pour la vague 1
-        CalculateExpectedEnemies(levelData.level);
+        // ✅ Afficher la transition de la vague 1 avant de commencer
+        StartCoroutine(ShowWaveTransitionAndStart(levelData.level));
+    }
+
+    /// <summary>
+    /// ✅ MODIFIÉ : Affiche l'écran de transition puis la sélection de pouvoir APRÈS
+    /// </summary>
+    private IEnumerator ShowWaveTransitionAndStart(int waveNumber)
+    {
+        isInWaveTransition = true;
+
+        // Calculer le nombre d'ennemis attendus AVANT d'afficher la transition
+        CalculateExpectedEnemies(waveNumber);
+
+        // 1. Afficher l'écran de transition (3 secondes)
+        yield return StartCoroutine(ShowWaveTransition(waveNumber));
+
+        isInWaveTransition = false;
+
+        // 2. ✅ MODIFIÉ : Afficher la sélection de pouvoir APRÈS la transition (sauf vague 1)
+        if (waveNumber > 1 && powerSelectionManager != null)
+        {
+            if (debugMode)
+                Debug.Log($"[LevelManagement] 🎁 Affichage de la sélection de pouvoir pour vague {waveNumber}");
+
+            waitingForPowerSelection = true;
+            powerSelectionManager.ShowPowerSelection();
+
+            // Attendre que le joueur choisisse un pouvoir
+            while (powerSelectionManager.IsSelectionActive())
+            {
+                yield return null;
+            }
+
+            waitingForPowerSelection = false;
+
+            if (debugMode)
+                Debug.Log($"[LevelManagement] ✅ Pouvoir sélectionné");
+        }
 
         if (debugMode)
-            Debug.Log($"[LevelManagement] === DÉMARRAGE VAGUE {levelData.level} ===\n  Ennemis attendus: {expectedEnemiesThisWave}");
+            Debug.Log($"[LevelManagement] === DÉMARRAGE VAGUE {waveNumber} ===\n  Ennemis attendus: {expectedEnemiesThisWave}");
 
-        // Démarrer la vérification continue
+        // 3. Démarrer la vérification continue
         StartChecking();
+    }
+
+    /// <summary>
+    /// ✅ MODIFIÉ : Affiche l'écran de transition de vague pendant X secondes
+    /// APPLIQUE UN STUN à tous les ennemis pendant la transition
+    /// </summary>
+    private IEnumerator ShowWaveTransition(int waveNumber)
+    {
+        if (debugMode)
+            Debug.Log($"[LevelManagement] 🎬 Affichage transition vague {waveNumber}");
+
+        // Activer le canvas de transition
+        if (waveTransitionCanvas != null)
+        {
+            waveTransitionCanvas.SetActive(true);
+
+            // Mettre à jour le texte
+            if (waveNumberText != null)
+            {
+                waveNumberText.text = $"WAVE {waveNumber}";
+            }
+        }
+
+        // Masquer le canvas du joueur via GameStateManager
+        if (gameStateManager != null)
+        {
+            gameStateManager.SetWaveTransitionMode(true);
+        }
+
+        // ✅ Appliquer un stun à tous les ennemis existants + nouveaux spawns
+        StartCoroutine(StunAllEnemiesDuringTransition(waveTransitionDuration));
+
+        // Attendre la durée de la transition
+        yield return new WaitForSeconds(waveTransitionDuration);
+
+        // Désactiver le canvas de transition
+        if (waveTransitionCanvas != null)
+        {
+            waveTransitionCanvas.SetActive(false);
+        }
+
+        // Réafficher le canvas du joueur
+        if (gameStateManager != null)
+        {
+            gameStateManager.SetWaveTransitionMode(false);
+        }
+
+        if (debugMode)
+            Debug.Log($"[LevelManagement] ✅ Transition terminée");
+    }
+
+    /// <summary>
+    /// ✅ Applique un stun à tous les ennemis pendant la durée spécifiée
+    /// Continue de surveiller les nouveaux spawns pendant cette période
+    /// </summary>
+    private IEnumerator StunAllEnemiesDuringTransition(float duration)
+    {
+        float elapsed = 0f;
+        float checkInterval = 0.1f; // Vérifier toutes les 0.1 secondes pour les nouveaux spawns
+
+        HashSet<GameObject> stunnedEnemies = new HashSet<GameObject>();
+
+        if (debugMode)
+            Debug.Log($"[LevelManagement] 🥶 Début du stun de masse (durée: {duration}s)");
+
+        while (elapsed < duration)
+        {
+            // Trouver tous les ennemis actuels
+            GameObject[] currentEnemies = GameObject.FindGameObjectsWithTag(enemyTag);
+
+            int newlyStunned = 0;
+
+            foreach (var enemyObj in currentEnemies)
+            {
+                if (enemyObj == null) continue;
+
+                // Si cet ennemi n'a pas encore été stunné
+                if (!stunnedEnemies.Contains(enemyObj))
+                {
+                    Enemy enemy = enemyObj.GetComponent<Enemy>();
+                    if (enemy != null)
+                    {
+                        // Appliquer le stun pour la durée restante de la transition
+                        float remainingDuration = duration - elapsed;
+                        enemy.Stun(remainingDuration);
+                        stunnedEnemies.Add(enemyObj);
+                        newlyStunned++;
+
+                        if (debugMode)
+                            Debug.Log($"[LevelManagement]   🥶 Stun appliqué à '{enemyObj.name}' pour {remainingDuration:F1}s");
+                    }
+                }
+            }
+
+            if (debugMode && newlyStunned > 0)
+                Debug.Log($"[LevelManagement] ✓ {newlyStunned} nouveau(x) ennemi(s) stunné(s)");
+
+            yield return new WaitForSeconds(checkInterval);
+            elapsed += checkInterval;
+        }
+
+        if (debugMode)
+            Debug.Log($"[LevelManagement] ✅ Fin du stun de masse - {stunnedEnemies.Count} ennemis total stunnés");
     }
 
     /// <summary>
@@ -144,11 +307,25 @@ public class LevelManagement : MonoBehaviour
     private void StopLevelManagement()
     {
         isActive = false;
+        isInWaveTransition = false;
+        waitingForPowerSelection = false;
         StopChecking();
         trackedEnemies.Clear();
 
+        // Masquer le canvas de transition
+        if (waveTransitionCanvas != null)
+            waveTransitionCanvas.SetActive(false);
+
         if (debugMode)
             Debug.Log("[LevelManagement] Arrêt de la gestion des vagues");
+    }
+
+    /// <summary>
+    /// ✅ GETTER PUBLIC : Indique si on est en transition de vague (pour bloquer les spawns)
+    /// </summary>
+    public bool IsInWaveTransition()
+    {
+        return isInWaveTransition;
     }
 
     /// <summary>
@@ -468,12 +645,11 @@ public class LevelManagement : MonoBehaviour
             enemiesKilledThisWave = 0;
             trackedEnemies.Clear();
 
-            CalculateExpectedEnemies(levelData.level);
-
             if (debugMode)
                 Debug.Log($"[LevelManagement] → Passage à la vague {levelData.level}");
 
-            StartCoroutine(RestartCheckingAfterDelay());
+            // ✅ Afficher la sélection de pouvoir puis la transition AVANT de commencer la nouvelle vague
+            StartCoroutine(ShowWaveTransitionAndStart(levelData.level));
         }
     }
 
@@ -485,7 +661,6 @@ public class LevelManagement : MonoBehaviour
         }
 
         bossSpawned = true;
-
 
         Instantiate(
             bossPrefab,
